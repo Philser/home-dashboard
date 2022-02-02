@@ -17,6 +17,7 @@
 
 <script lang="ts">
 import { Options, Vue } from 'vue-class-component';
+import axios from 'axios';
 
 type Movie = {
   title: string;
@@ -25,6 +26,11 @@ type Movie = {
 @Options({
   props: {
     msg: String,
+  },
+  created() {
+    axios.get('http://localhost:8081/api/watchlist').then((resp) => {
+      this.movies = resp.data;
+    });
   },
   data() {
     return {
@@ -40,7 +46,7 @@ export default class Watchlist extends Vue {
 
   movieInput: string;
 
-  submitMovie(): void {
+  async submitMovie(): Promise<void> {
     this.movies.push({ title: this.movieInput });
   }
 }
