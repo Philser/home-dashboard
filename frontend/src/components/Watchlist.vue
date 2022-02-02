@@ -1,6 +1,16 @@
 <template>
   <div class="watchlist">
-    <input type="text" id="movName" name="movName" placeholder="Movie Name" />
+    <ul>
+      <li v-for="movie in movies" :key="movie.title">{{ movie.title }}</li>
+    </ul>
+
+    <input
+      type="text"
+      id="movTitle"
+      name="movTitle"
+      placeholder="Movie Title"
+      v-model="movieInput"
+    />
     <button class="submitMovie" @click="submitMovie">Submit</button>
   </div>
 </template>
@@ -8,16 +18,30 @@
 <script lang="ts">
 import { Options, Vue } from 'vue-class-component';
 
+type Movie = {
+  title: string;
+};
+
 @Options({
   props: {
     msg: String,
+  },
+  data() {
+    return {
+      movieInput: '',
+      movies: [],
+    };
   },
 })
 export default class Watchlist extends Vue {
   msg!: string;
 
+  movies: Movie[];
+
+  movieInput: string;
+
   submitMovie(): void {
-    window.alert(this.msg);
+    this.movies.push({ title: this.movieInput });
   }
 }
 </script>
