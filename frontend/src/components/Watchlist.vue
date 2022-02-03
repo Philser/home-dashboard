@@ -48,6 +48,18 @@ export default class Watchlist extends Vue {
 
   async submitMovie(): Promise<void> {
     this.movies.push({ title: this.movieInput });
+
+    axios
+      .post(
+        'http://localhost:8081/api/watchlist',
+        {
+          movie: {
+            title: this.movieInput,
+          },
+        },
+        {},
+      )
+      .catch((e) => alert(`Error saving movie: ${e}`));
   }
 }
 </script>
