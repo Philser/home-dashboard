@@ -1,7 +1,11 @@
 <template>
   <div class="watchlist">
     <ul>
-      <li v-for="movie in movies" :key="movie.title">{{ movie.title }}</li>
+      <li v-for="movie in movies" :key="movie.title">
+        <div>
+          <p class="list-item">{{ movie.title }}</p>
+        </div>
+      </li>
     </ul>
 
     <input
@@ -24,9 +28,6 @@ type Movie = {
 };
 
 @Options({
-  props: {
-    msg: String,
-  },
   created() {
     axios.get('http://localhost:8081/api/watchlist').then((resp) => {
       this.movies = resp.data;
@@ -40,8 +41,6 @@ type Movie = {
   },
 })
 export default class Watchlist extends Vue {
-  msg!: string;
-
   movies: Movie[];
 
   movieInput: string;

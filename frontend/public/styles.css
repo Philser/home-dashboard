@@ -1,0 +1,9 @@
+.list-item
+{
+    float: left;
+    clear: left;
+}
+
+ul {
+    display: block;
+}
