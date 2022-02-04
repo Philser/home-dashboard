@@ -1,24 +1,29 @@
 <template>
-  <div>
-    <ul>
-      <li v-for="movie in movies" :key="movie.title">
-        <div>
-          <p class="list-item">{{ movie.title }}</p>
-        </div>
-      </li>
-    </ul>
-
-    <label for="movieTitleInput">
-      <input
-        type="text"
-        id="movieTitleInput"
-        name="movieTitleInput"
-        placeholder="Movie Title"
-        v-model="movieInput"
-      />
-    </label>
-    <button class="submitMovie" @click="submitMovie">Submit</button>
-  </div>
+  <v-container>
+    <v-card>
+      <v-list>
+        <v-list-item v-for="movie in movies" :key="movie.title">
+          <div>
+            <p class="list-item">{{ movie.title }}</p>
+          </div>
+        </v-list-item>
+      </v-list>
+      <v-col cols="12" sm="12">
+        <v-text-field
+          type="text"
+          id="movieTitleInput"
+          name="movieTitleInput"
+          placeholder="Movie Title"
+          v-model="movieInput"
+        ></v-text-field>
+      </v-col>
+      <v-col>
+        <v-btn elevation="2" class="submitMovie" @click="submitMovie"
+          >Submit</v-btn
+        >
+      </v-col>
+    </v-card>
+  </v-container>
 </template>
 
 <script lang="ts">

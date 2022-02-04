@@ -1,9 +1,15 @@
 <template>
-  <div>
+  <v-container>
     <hello-world />
-    <watchlist />
-    <shopping-list />
-  </div>
+    <v-row>
+      <v-col cols="10" sm="6">
+        <watchlist />
+      </v-col>
+      <v-col>
+        <shopping-list />
+      </v-col>
+    </v-row>
+  </v-container>
 </template>
 
 <script lang="ts">
