@@ -1,7 +1,7 @@
 <template>
   <div class="shoppingList">
     <ul>
-      <li v-for="item in shoppingItems" :key="item.name">
+      <li v-for="item in shoppingList" :key="item.name">
         <div>
           <p class="list-item">{{ item.name }}</p>
         </div>
@@ -29,6 +29,7 @@ type ShoppingListItem = {
 @Options({
   created() {
     axios.get('http://localhost:8081/api/shoppinglist').then((resp) => {
+      console.log(resp.data);
       this.shoppingList = resp.data;
     });
   },
@@ -52,7 +53,7 @@ export default class ShoppingList extends Vue {
         'http://localhost:8081/api/shoppinglist',
         {
           item: {
-            title: this.itemInput,
+            name: this.itemInput,
           },
         },
         {},

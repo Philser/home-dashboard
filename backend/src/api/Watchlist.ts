@@ -5,7 +5,7 @@ import { Express } from 'express'
 import { Db } from 'mongodb'
 import { WatchlistMovie } from './../model/Watchlist'
 
-export function WatchlistHandler(app: Express) {
+export function wachlistApi(app: Express) {
     app.get('/api/watchlist', async (_, res) => {
         const db = await getDb()
         const movies = await db.collection<WatchlistMovie>(WATCHLIST_COLLECTION).find().toArray()

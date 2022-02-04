@@ -1,5 +1,5 @@
 <template>
-  <div class="watchlist">
+  <div>
     <ul>
       <li v-for="movie in movies" :key="movie.title">
         <div>
@@ -41,9 +41,9 @@ type Movie = {
   },
 })
 export default class Watchlist extends Vue {
-  movies: Movie[];
+  movies!: Movie[];
 
-  movieInput: string;
+  movieInput!: string;
 
   async submitMovie(): Promise<void> {
     this.movies.push({ title: this.movieInput });

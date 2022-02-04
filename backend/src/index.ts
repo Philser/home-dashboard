@@ -3,8 +3,9 @@ import express from 'express'
 import { Db, MongoClient } from 'mongodb'
 import { WatchlistMovie } from './model/Watchlist'
 import cors from 'cors'
-import { getDb, initDb, MONGO_URI, WATCHLIST_COLLECTION } from './db/Mongo'
-import { WatchlistHandler as watchlistApi } from './api/Watchlist'
+import { getDb, initDb } from './db/Mongo'
+import { wachlistApi } from './api/Watchlist'
+import { ShoppingListHandler as shoppingListApi } from './api/ShoppingList'
 
 const app = express()
 const port = 8081 // default port to listen
@@ -29,7 +30,9 @@ async function server(): Promise<void> {
             res.send('Hello world!')
         })
 
-        watchlistApi(app)
+        wachlistApi(app)
+
+        shoppingListApi(app)
 
 
         // start the Express server
