@@ -8,13 +8,15 @@
       </li>
     </ul>
 
-    <input
-      type="text"
-      id="movTitle"
-      name="movTitle"
-      placeholder="Movie Title"
-      v-model="movieInput"
-    />
+    <label for="movieTitleInput">
+      <input
+        type="text"
+        id="movieTitleInput"
+        name="movieTitleInput"
+        placeholder="Movie Title"
+        v-model="movieInput"
+      />
+    </label>
     <button class="submitMovie" @click="submitMovie">Submit</button>
   </div>
 </template>
