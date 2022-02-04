@@ -1,21 +1,26 @@
 <template>
-  <div class="shoppingList">
-    <ul>
-      <li v-for="item in shoppingList" :key="item.name">
-        <div>
-          <p class="list-item">{{ item.name }}</p>
-        </div>
-      </li>
-    </ul>
+  <v-container>
+    <div class="shoppingList">
+      <ul>
+        <li v-for="item in shoppingList" :key="item.name">
+          <div>
+            <p class="list-item">{{ item.name }}</p>
+          </div>
+        </li>
+      </ul>
 
-    <input
-      type="text"
-      id="itemInputButton"
-      placeholder="Shopping List Item"
-      v-model="itemInput"
-    />
-    <button id="submitItem" @click="submitItem">Submit</button>
-  </div>
+      <label for="itemInput">
+        <input
+          type="text"
+          name="itemInput"
+          id="itemInput"
+          placeholder="Shopping List Item"
+          v-model="itemInput"
+        />
+      </label>
+      <button id="submitItem" @click="submitItem">Submit</button>
+    </div>
+  </v-container>
 </template>
 
 <script lang="ts">
