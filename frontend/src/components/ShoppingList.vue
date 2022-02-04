@@ -1,25 +1,26 @@
 <template>
   <v-container>
-    <div class="shoppingList">
-      <ul>
-        <li v-for="item in shoppingList" :key="item.name">
+    <v-card>
+      <v-list>
+        <v-list-item v-for="item in shoppingList" :key="item.name">
           <div>
             <p class="list-item">{{ item.name }}</p>
           </div>
-        </li>
-      </ul>
-
-      <label for="itemInput">
-        <input
+        </v-list-item>
+      </v-list>
+      <v-col cols="12" sm="12">
+        <v-text-field
           type="text"
-          name="itemInput"
-          id="itemInput"
-          placeholder="Shopping List Item"
+          id="shoppingListInput"
+          name="shoppingListInput"
+          placeholder="Shopping Item"
           v-model="itemInput"
-        />
-      </label>
-      <button id="submitItem" @click="submitItem">Submit</button>
-    </div>
+        ></v-text-field>
+      </v-col>
+      <v-col>
+        <v-btn elevation="2" class="submitItem" @click="submitItem">Add</v-btn>
+      </v-col>
+    </v-card>
   </v-container>
 </template>
 
@@ -34,7 +35,6 @@ type ShoppingListItem = {
 @Options({
   created() {
     axios.get('http://localhost:8081/api/shoppinglist').then((resp) => {
-      console.log(resp.data);
       this.shoppingList = resp.data;
     });
   },
