@@ -1,24 +1,21 @@
 // tslint:disable:no-console
 
-import { WATCHLIST_COLLECTION } from './../db/Mongo'
+import { getDb, WATCHLIST_COLLECTION } from './../db/Mongo'
 import { Express } from 'express'
 import { Db } from 'mongodb'
 import { WatchlistMovie } from './../model/Watchlist'
 
-export function WatchlistHandler(app: Express, db: Db) {
+export function WatchlistHandler(app: Express) {
     app.get('/api/watchlist', async (_, res) => {
-        const movies: WatchlistMovie[] = []
-        const movieCursor = db.collection<WatchlistMovie>(WATCHLIST_COLLECTION).find()
-        await movieCursor.forEach((movie) => {
-            movies.push({ title: movie.title })
-        })
+        const db = await getDb()
+        const movies = await db.collection<WatchlistMovie>(WATCHLIST_COLLECTION).find().toArray()
 
         res.setHeader('Access-Control-Allow-Origin', '*')
         res.send(movies)
     })
 
     app.post('/api/watchlist', async (req, res) => {
-        console.log(req)
+        const db = await getDb()
         // TODO: Find a validation lib
         if (!req.body || !req.body.movie || !req.body.movie.title) {
             res.sendStatus(400)

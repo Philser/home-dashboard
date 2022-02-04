@@ -3,23 +3,30 @@
 import { Db, MongoClient } from 'mongodb'
 
 // TODO: Move to config
-export const MONGO_URI = 'mongodb://phil:phil@localhost/dashboard?w=majority'
+export const MONGO_URI = 'mongodb://phil:phil@localhost/dashboard'
 const MONGO_DB = 'dashboard'
 export const WATCHLIST_COLLECTION = 'watchlist'
 
+let _db: Db
 
-export async function getDb(client: MongoClient): Promise<Db> {
-    try {
-        await client.connect()
-        const db = await client.db(MONGO_DB)
-        db.command({ ping: 1 })
+export async function initDb(): Promise<void> {
+    if (!_db) {
+        const client = await MongoClient.connect(MONGO_URI)
+        const db = await client.db()
+        await db.command({ ping: 1 })
+
+        _db = db
 
         console.log('DB connection up and running')
+    }
+}
 
-        return db
+export async function getDb(): Promise<Db> {
+    try {
+        await initDb()
+        return _db
     } catch (e) {
         console.error(`Could not establish DB connection: ${e}`)
-        client.close()
         throw e
     }
 }

@@ -3,7 +3,8 @@ import express from 'express'
 import { Db, MongoClient } from 'mongodb'
 import { WatchlistMovie } from './model/Watchlist'
 import cors from 'cors'
-import { getDb, MONGO_URI, WATCHLIST_COLLECTION } from './db/Mongo'
+import { getDb, initDb, MONGO_URI, WATCHLIST_COLLECTION } from './db/Mongo'
+import { WatchlistHandler as watchlistApi } from './api/Watchlist'
 
 const app = express()
 const port = 8081 // default port to listen
@@ -20,41 +21,15 @@ function initMiddlewares() {
 
 async function server(): Promise<void> {
     initMiddlewares()
-    const mongoClient = new MongoClient(MONGO_URI)
 
     try {
-        const db = await getDb(mongoClient)
+        await initDb()
 
-        app.get('/', async (req, res) => {
+        app.get('/', async (_, res) => {
             res.send('Hello world!')
         })
 
-        app.get('/api/watchlist', async (req, res) => {
-            const movies: WatchlistMovie[] = []
-            const movieCursor = db.collection<WatchlistMovie>(WATCHLIST_COLLECTION).find()
-            await movieCursor.forEach((movie) => {
-                movies.push({ title: movie.title })
-            })
-
-            res.setHeader('Access-Control-Allow-Origin', '*')
-            res.send(movies)
-        })
-
-        app.post('/api/watchlist', async (req, res) => {
-            console.log(req)
-            // TODO: Find a validation lib
-            if (!req.body || !req.body.movie || !req.body.movie.title) {
-                res.sendStatus(400)
-                return
-            }
-
-            await db.collection<WatchlistMovie>(WATCHLIST_COLLECTION).insertOne({
-                title: req.body.movie.title
-            })
-
-            res.sendStatus(200)
-        })
-
+        watchlistApi(app)
 
 
         // start the Express server
@@ -62,9 +37,10 @@ async function server(): Promise<void> {
             // tslint:disable-next-line:no-console
             console.log(`server started at http://localhost:${port}`)
         })
-    } finally {
-        mongoClient.close()
+    } catch (e) {
+        console.error(`Fatal: ${e}`)
     }
+
 }
 
 server().catch(console.dir)
