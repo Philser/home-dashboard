@@ -3,8 +3,9 @@
     <v-card>
       <v-list dense>
         <v-list-item v-for="(item, i) in shoppingList.items" :key="i">
-          <v-list-item-action
-            ><v-checkbox
+          <v-list-item-action :input-value="item.checked">
+            <v-checkbox
+              @click="changeChecked(i)"
               :input-value="active"
               :style="{
                 'align-items': 'center',
@@ -49,9 +50,7 @@ type ShoppingList = {
 @Options({
   created() {
     axios.get('http://localhost:8081/api/shoppinglist').then((resp) => {
-      console.log(resp.data);
       this.shoppingList = resp.data.shoppingList;
-      console.log(this.shoppingList);
     });
   },
   data() {
@@ -60,6 +59,11 @@ type ShoppingList = {
       shoppingList: { items: [] },
       checkedItems: [],
     };
+  },
+  methods: {
+    changeChecked(index) {
+      this.shoppingList.items[index].checked = !this.shoppingList.items[index].checked;
+    },
   },
 })
 export default class ShoppingListComponent extends Vue {
