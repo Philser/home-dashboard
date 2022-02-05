@@ -1,13 +1,22 @@
 <template>
   <v-container>
     <v-card>
-      <v-list>
-        <v-list-item v-for="item in shoppingList" :key="item.name">
-          <div>
-            <p class="list-item">{{ item.name }}</p>
-          </div>
+      <v-list dense>
+        <v-list-item v-for="(item, i) in shoppingList.items" :key="i">
+          <v-list-item-action
+            ><v-checkbox
+              :input-value="active"
+              :style="{
+                'align-items': 'center',
+                'justify-content': 'center',
+              }"
+              hide-details
+            />
+          </v-list-item-action>
+          <v-list-item-title v-text="item.name"></v-list-item-title>
         </v-list-item>
       </v-list>
+
       <v-col cols="12" sm="12">
         <v-text-field
           type="text"
@@ -29,37 +38,43 @@ import { Options, Vue } from 'vue-class-component';
 import axios from 'axios';
 
 type ShoppingListItem = {
-  title: string;
+  name: string;
+  checked: boolean;
+};
+
+type ShoppingList = {
+  items: ShoppingListItem[];
 };
 
 @Options({
   created() {
     axios.get('http://localhost:8081/api/shoppinglist').then((resp) => {
-      this.shoppingList = resp.data;
+      console.log(resp.data);
+      this.shoppingList = resp.data.shoppingList;
+      console.log(this.shoppingList);
     });
   },
   data() {
     return {
       itemInput: '',
-      shoppingList: [],
+      shoppingList: { items: [] },
+      checkedItems: [],
     };
   },
 })
-export default class ShoppingList extends Vue {
-  shoppingList!: ShoppingListItem[];
+export default class ShoppingListComponent extends Vue {
+  shoppingList!: ShoppingList;
 
   itemInput!: string;
 
   async submitItem(): Promise<void> {
-    this.shoppingList.push({ title: this.itemInput });
+    this.shoppingList.items.push({ name: this.itemInput, checked: false });
 
     axios
       .post(
         'http://localhost:8081/api/shoppinglist',
         {
-          item: {
-            name: this.itemInput,
-          },
+          shoppingList: this.shoppingList,
         },
         {},
       )
