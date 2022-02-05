@@ -3,10 +3,10 @@
     <v-card>
       <v-list dense>
         <v-list-item v-for="(item, i) in shoppingList.items" :key="i">
-          <v-list-item-action :input-value="item.checked">
+          <v-list-item-action>
             <v-checkbox
               @click="changeChecked(i)"
-              :input-value="active"
+              v-model="item.checked"
               :style="{
                 'align-items': 'center',
                 'justify-content': 'center',
@@ -14,7 +14,17 @@
               hide-details
             />
           </v-list-item-action>
-          <v-list-item-title v-text="item.name"></v-list-item-title>
+          <v-col>
+            <v-list-item-title v-text="item.name"></v-list-item-title>
+          </v-col>
+          <v-list-item-action>
+            <v-btn
+              icon="mdi-delete"
+              size="x-small"
+              rounded="lg"
+              @click="deleteItem(i)"
+            ></v-btn>
+          </v-list-item-action>
         </v-list-item>
       </v-list>
 
@@ -37,20 +47,13 @@
 <script lang="ts">
 import { Options, Vue } from 'vue-class-component';
 import axios from 'axios';
-
-type ShoppingListItem = {
-  name: string;
-  checked: boolean;
-};
-
-type ShoppingList = {
-  items: ShoppingListItem[];
-};
+import { ShoppingList, ShoppingListApi } from '../api/ShoppingListApi';
 
 @Options({
   created() {
     axios.get('http://localhost:8081/api/shoppinglist').then((resp) => {
       this.shoppingList = resp.data.shoppingList;
+      console.log(this.shoppingList);
     });
   },
   data() {
@@ -60,11 +63,6 @@ type ShoppingList = {
       checkedItems: [],
     };
   },
-  methods: {
-    changeChecked(index) {
-      this.shoppingList.items[index].checked = !this.shoppingList.items[index].checked;
-    },
-  },
 })
 export default class ShoppingListComponent extends Vue {
   shoppingList!: ShoppingList;
@@ -73,16 +71,26 @@ export default class ShoppingListComponent extends Vue {
 
   async submitItem(): Promise<void> {
     this.shoppingList.items.push({ name: this.itemInput, checked: false });
+    await this.postShoppingList(this.shoppingList);
+  }
 
-    axios
-      .post(
-        'http://localhost:8081/api/shoppinglist',
-        {
-          shoppingList: this.shoppingList,
-        },
-        {},
-      )
-      .catch((e) => alert(`Error saving item: ${e}`));
+  async changeChecked(index: number): Promise<void> {
+    const { checked } = this.shoppingList.items[index];
+    this.shoppingList.items[index].checked = !checked;
+    await this.postShoppingList(this.shoppingList);
+  }
+
+  async deleteItem(index: number): Promise<void> {
+    this.shoppingList.items.splice(index, 1);
+    await this.postShoppingList(this.shoppingList);
+  }
+
+  async postShoppingList(list: ShoppingList): Promise<void> {
+    try {
+      ShoppingListApi.postShoppingList(this.shoppingList);
+    } catch (e) {
+      // TODO: Handle error :)
+    }
   }
 }
 </script>
