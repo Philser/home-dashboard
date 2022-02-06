@@ -11,7 +11,8 @@
         "quotemark": [
             true,
             "single"
-        ]
+        ],
+        "no-unused-variable": true
     },
     "rulesDirectory": []
 }

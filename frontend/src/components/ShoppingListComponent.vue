@@ -49,18 +49,24 @@ import { Options, Vue } from 'vue-class-component';
 import axios from 'axios';
 import { ShoppingList, ShoppingListApi } from '../api/ShoppingListApi';
 
+async function postShoppingList(list: ShoppingList): Promise<void> {
+  try {
+    ShoppingListApi.postShoppingList(list);
+  } catch (e) {
+    // TODO: Handle error :)
+  }
+}
+
 @Options({
   created() {
     axios.get('http://localhost:8081/api/shoppinglist').then((resp) => {
       this.shoppingList = resp.data.shoppingList;
-      console.log(this.shoppingList);
     });
   },
   data() {
     return {
       itemInput: '',
       shoppingList: { items: [] },
-      checkedItems: [],
     };
   },
 })
@@ -71,26 +77,18 @@ export default class ShoppingListComponent extends Vue {
 
   async submitItem(): Promise<void> {
     this.shoppingList.items.push({ name: this.itemInput, checked: false });
-    await this.postShoppingList(this.shoppingList);
+    await postShoppingList(this.shoppingList);
   }
 
   async changeChecked(index: number): Promise<void> {
     const { checked } = this.shoppingList.items[index];
     this.shoppingList.items[index].checked = !checked;
-    await this.postShoppingList(this.shoppingList);
+    await postShoppingList(this.shoppingList);
   }
 
   async deleteItem(index: number): Promise<void> {
     this.shoppingList.items.splice(index, 1);
-    await this.postShoppingList(this.shoppingList);
-  }
-
-  async postShoppingList(list: ShoppingList): Promise<void> {
-    try {
-      ShoppingListApi.postShoppingList(this.shoppingList);
-    } catch (e) {
-      // TODO: Handle error :)
-    }
+    await postShoppingList(this.shoppingList);
   }
 }
 </script>

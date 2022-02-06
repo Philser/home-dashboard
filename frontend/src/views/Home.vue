@@ -3,7 +3,7 @@
     <hello-world />
     <v-row>
       <v-col cols="10" sm="6">
-        <watchlist />
+        <watchlist-component />
       </v-col>
       <v-col>
         <shopping-list-component />
@@ -15,7 +15,7 @@
 <script lang="ts">
 import { defineComponent } from 'vue';
 import ShoppingListComponent from '../components/ShoppingListComponent.vue';
-import Watchlist from '../components/Watchlist.vue';
+import WatchlistComponent from '../components/WatchlistComponent.vue';
 import HelloWorld from '../components/HelloWorld.vue';
 
 export default defineComponent({
@@ -23,7 +23,7 @@ export default defineComponent({
 
   components: {
     HelloWorld,
-    Watchlist,
+    WatchlistComponent,
     ShoppingListComponent,
   },
 });

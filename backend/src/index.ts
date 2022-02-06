@@ -1,9 +1,7 @@
 // tslint:disable:no-console
 import express from 'express'
-import { Db, MongoClient } from 'mongodb'
-import { WatchlistMovie } from './model/Watchlist'
 import cors from 'cors'
-import { getDb, initDb } from './db/Mongo'
+import { initDb } from './db/Mongo'
 import { wachlistApi } from './api/Watchlist'
 import { ShoppingListHandler as shoppingListApi } from './api/ShoppingList'
 

@@ -1,4 +1,3 @@
-import { Db } from 'mongodb'
 
 export interface ShoppingListItem {
     name: string

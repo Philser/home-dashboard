@@ -4,7 +4,6 @@ import { Db, MongoClient } from 'mongodb'
 
 // TODO: Move to config
 export const MONGO_URI = 'mongodb://phil:phil@localhost/dashboard'
-const MONGO_DB = 'dashboard'
 export const WATCHLIST_COLLECTION = 'watchlist'
 export const SHOPPING_LIST_COLLECTION = 'shoppinglist'
 

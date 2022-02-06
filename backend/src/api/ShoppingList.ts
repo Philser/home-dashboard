@@ -3,18 +3,17 @@
 import { getDb, SHOPPING_LIST_COLLECTION } from '../db/Mongo'
 import { Express } from 'express'
 import { ShoppingList, ShoppingListItem } from '../model/ShoppingList'
+import { WithoutId } from 'mongodb'
 
 
 export function ShoppingListHandler(app: Express) {
     app.get('/api/shoppinglist', async (_, res) => {
         const db = await getDb()
         // TODO: Use ORM
-        let list = await db.collection<ShoppingList>(SHOPPING_LIST_COLLECTION).findOne()
-        console.log(list)
+        let list: WithoutId<ShoppingList> = await db.collection<ShoppingList>(SHOPPING_LIST_COLLECTION).findOne()
         if (list === null) {
-            const empty = { items: [] as ShoppingListItem[] }
-            const inserted = await db.collection<ShoppingList>(SHOPPING_LIST_COLLECTION).insertOne(empty)
-            list = { _id: inserted.insertedId, ...empty }
+            list = { items: [] as ShoppingListItem[] }
+            await db.collection<ShoppingList>(SHOPPING_LIST_COLLECTION).insertOne(list)
         }
 
         res.setHeader('Access-Control-Allow-Origin', '*')
@@ -24,7 +23,7 @@ export function ShoppingListHandler(app: Express) {
     app.post('/api/shoppinglist', async (req, res) => {
         const db = await getDb()
         // TODO: Find a validation lib
-        if (!req.body || !req.body.shoppingList) {
+        if (!req.body || !req.body.shoppingList || !req.body.shoppingList.items) {
             res.sendStatus(400)
             return
         }
