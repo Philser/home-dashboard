@@ -6,6 +6,7 @@ import { Db, MongoClient } from 'mongodb'
 export const MONGO_URI = 'mongodb://phil:phil@localhost/dashboard'
 export const WATCHLIST_COLLECTION = 'watchlist'
 export const SHOPPING_LIST_COLLECTION = 'shoppinglist'
+export const USER_COLLECTION = 'user'
 
 let _db: Db
 
