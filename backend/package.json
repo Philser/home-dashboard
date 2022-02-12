@@ -18,10 +18,8 @@
   "homepage": "https://github.com/Philser/home-dashboard#readme",
   "dependencies": {
     "@types/cors": "^2.8.12",
-    "@types/mongodb": "^4.0.7",
     "cors": "^2.8.5",
-    "express": "^4.17.2",
-    "mongodb": "^4.3.1"
+    "express": "^4.17.2"
   },
   "devDependencies": {
     "@types/express": "^4.17.13",
