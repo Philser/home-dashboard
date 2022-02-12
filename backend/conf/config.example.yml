@@ -1,0 +1,8 @@
+public_key:
+  -----BEGIN PUBLIC KEY-----
+  PUBLIC KEY GOES HERE
+  -----END PUBLIC KEY-----
+private_key:
+  -----BEGIN ENCRYPTED PRIVATE KEY-----
+  PRIVATE KEY GOES HERE
+  -----END ENCRYPTED PRIVATE KEY-----

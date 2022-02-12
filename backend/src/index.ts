@@ -4,6 +4,7 @@ import cors from 'cors'
 import { initDb } from './db/Mongo'
 import { wachlistApi } from './api/Watchlist'
 import { ShoppingListHandler as shoppingListApi } from './api/ShoppingList'
+import { LoginHandler as loginHandler } from './api/Login'
 
 const app = express()
 const port = 8081 // default port to listen
@@ -15,7 +16,9 @@ function initMiddlewares() {
     }))
 
     app.use(express.json())
-    app.use(express.urlencoded())
+    app.use(express.urlencoded({
+        extended: true
+    }))
 }
 
 
@@ -30,8 +33,8 @@ async function server(): Promise<void> {
         })
 
         wachlistApi(app)
-
         shoppingListApi(app)
+        loginHandler(app)
 
 
         // start the Express server
