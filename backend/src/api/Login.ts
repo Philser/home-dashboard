@@ -2,8 +2,7 @@
 
 import { Express } from 'express'
 import * as jwt from 'jsonwebtoken'
-import { User } from '../model/User'
-import { getDb, USER_COLLECTION } from '../db/Mongo'
+import { UserModel } from '../model/User'
 import * as bcrypt from 'bcrypt'
 
 
@@ -28,10 +27,9 @@ const PRIVATE_KEY = ``
 export function LoginHandler(app: Express) {
     app.post('/login', async (req, res) => {
         try {
-            const db = await getDb()
             const { username, password } = req.body
 
-            const savedUser = await db.collection<User>(USER_COLLECTION).findOne({ username })
+            const savedUser = await UserModel.findOne({})
 
             if (!savedUser) {
                 // TODO: Proper error message body
