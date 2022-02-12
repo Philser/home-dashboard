@@ -42,6 +42,8 @@
   },
   "prettier": {
     "singleQuote": true,
-    "trailingComma": "all"
-  }
+    "trailingComma": "all",
+    "semi": false
+  },
+  "eslintConfig": {}
 }
