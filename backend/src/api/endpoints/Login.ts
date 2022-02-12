@@ -2,8 +2,9 @@
 
 import { Express } from 'express'
 import * as jwt from 'jsonwebtoken'
-import { UserModel } from '../model/User'
+import { UserModel } from '../../model/User'
 import * as bcrypt from 'bcrypt'
+import { InternalServerError } from '../errors/Utils'
 
 
 // const PUBLIC_KEY = `
@@ -51,10 +52,7 @@ export function LoginHandler(app: Express) {
             res.sendStatus(200)
 
         } catch (e) {
-            console.error(`Failed to query user: ${e.stack}`)
-            res.sendStatus(500)
-
-            return null
+            InternalServerError(res, e, 'POST', '/login')
         }
     })
 }

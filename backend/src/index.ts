@@ -2,9 +2,9 @@
 import express from 'express'
 import cors from 'cors'
 import { initDb } from './db/Mongo'
-import { wachlistApi } from './api/Watchlist'
-import { ShoppingListHandler as shoppingListApi } from './api/ShoppingList'
-import { LoginHandler as loginHandler } from './api/Login'
+import { wachlistApi } from './api/endpoints/Watchlist'
+import { ShoppingListHandler as shoppingListApi } from './api/endpoints/ShoppingList'
+import { LoginHandler as loginHandler } from './api/endpoints/Login'
 
 const app = express()
 const port = 8081 // default port to listen

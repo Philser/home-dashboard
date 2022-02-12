@@ -1,7 +1,8 @@
 // tslint:disable:no-console
 
 import { Express } from 'express'
-import { ShoppingList, ShoppingListModel } from '../model/ShoppingList'
+import { ShoppingList, ShoppingListModel } from '../../model/ShoppingList'
+import { InternalServerError } from '../errors/Utils'
 
 interface ShoppingListApiObject {
     shoppingList: ShoppingList
@@ -26,8 +27,7 @@ export function ShoppingListHandler(app: Express) {
             res.send(returnValue)
         }
         catch (e) {
-            console.error(`Error in GET /api/shoppinglist: ${e}`)
-            res.sendStatus(500)
+            InternalServerError(res, e, 'GET', '/api/shoppinglist')
         }
     })
 
@@ -44,8 +44,7 @@ export function ShoppingListHandler(app: Express) {
 
             res.sendStatus(200)
         } catch (e) {
-            console.error(`Error in POST /api/shoppinglist: ${e}`)
-            res.sendStatus(500)
+            InternalServerError(res, e, 'POST', '/api/shoppinglist')
         }
     })
 }

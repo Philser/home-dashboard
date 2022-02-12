@@ -1,6 +1,7 @@
 // tslint:disable:no-console
 import { Express } from 'express'
-import { Watchlist, WatchlistModel } from './../model/Watchlist'
+import { Watchlist, WatchlistModel } from '../../model/Watchlist'
+import { InternalServerError } from '../errors/Utils'
 
 interface WatchlistApiObject {
     watchlist: Watchlist
@@ -24,8 +25,7 @@ export function wachlistApi(app: Express) {
             res.setHeader('Access-Control-Allow-Origin', '*')
             res.send(returnValue)
         } catch (e) {
-            console.error(`Error in GET /api/shoppinglist: ${e}`)
-            res.sendStatus(500)
+            InternalServerError(res, e, 'GET', '/api/watchlist')
         }
     })
 
@@ -43,8 +43,7 @@ export function wachlistApi(app: Express) {
             res.sendStatus(200)
         }
         catch (e) {
-            console.error(`Error in POST /api/shoppinglist: ${e}`)
-            res.sendStatus(500)
+            InternalServerError(res, e, 'POST', '/api/watchlist')
         }
     })
 
