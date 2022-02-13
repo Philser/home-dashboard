@@ -19,6 +19,7 @@
 <script lang="ts">
 import { Options, Vue } from 'vue-class-component'
 import { ShoppingListApi } from '../api/LoginApi'
+import { authState } from '../auth'
 
 @Options({
   data() {
@@ -35,10 +36,17 @@ export default class LoginComponent extends Vue {
 
   async login() {
     console.log(`Posting:' + ${this.username}`)
-    await ShoppingListApi.postLogin({
-      username: this.username,
-      password: this.password,
-    })
+    try {
+      await ShoppingListApi.postLogin({
+        username: this.username,
+        password: this.password,
+      })
+
+      authState.loggedIn = true
+      this.$router.push('/')
+    } catch (e) {
+      // TODO: Show Login Failed error
+    }
   }
 }
 </script>

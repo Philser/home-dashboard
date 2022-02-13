@@ -1,4 +1,5 @@
 // tslint:disable:no-console
+import cookieParser = require('cookie-parser')
 import express from 'express'
 import cors from 'cors'
 import { initDb } from './db/Mongo'
@@ -19,6 +20,7 @@ function initMiddlewares() {
     app.use(express.urlencoded({
         extended: true
     }))
+    app.use(cookieParser())
 }
 
 

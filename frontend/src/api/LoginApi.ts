@@ -9,7 +9,7 @@ export interface Credentials {
 export class ShoppingListApi {
     static async postLogin(credentials: Credentials) {
 
-        const hashed = SHA256(credentials.password)
+        const hashed = SHA256(credentials.password).toString()
 
         await axios.post('http://localhost:8081/login', {
             username: credentials.username,

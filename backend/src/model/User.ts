@@ -17,4 +17,4 @@ const userSchema = new Schema<User>({
     }
 })
 
-export const UserModel = model<User>(USER_COLLECTION, userSchema)
+export const UserModel = model<User>(USER_COLLECTION, userSchema, USER_COLLECTION)
