@@ -45,13 +45,13 @@
 </template>
 
 <script lang="ts">
-import { Options, Vue } from 'vue-class-component';
-import axios from 'axios';
-import { ShoppingList, ShoppingListApi } from '../api/ShoppingListApi';
+import { Options, Vue } from 'vue-class-component'
+import axios from 'axios'
+import { ShoppingList, ShoppingListApi } from '../api/ShoppingListApi'
 
 async function postShoppingList(list: ShoppingList): Promise<void> {
   try {
-    ShoppingListApi.postShoppingList(list);
+    await ShoppingListApi.postShoppingList(list)
   } catch (e) {
     // TODO: Handle error :)
   }
@@ -60,35 +60,35 @@ async function postShoppingList(list: ShoppingList): Promise<void> {
 @Options({
   created() {
     axios.get('http://localhost:8081/api/shoppinglist').then((resp) => {
-      this.shoppingList = resp.data.shoppingList;
-    });
+      this.shoppingList = resp.data.shoppingList
+    })
   },
   data() {
     return {
       itemInput: '',
       shoppingList: { items: [] },
-    };
+    }
   },
 })
 export default class ShoppingListComponent extends Vue {
-  shoppingList!: ShoppingList;
+  shoppingList!: ShoppingList
 
-  itemInput!: string;
+  itemInput!: string
 
   async submitItem(): Promise<void> {
-    this.shoppingList.items.push({ name: this.itemInput, checked: false });
-    await postShoppingList(this.shoppingList);
+    this.shoppingList.items.push({ name: this.itemInput, checked: false })
+    await postShoppingList(this.shoppingList)
   }
 
   async changeChecked(index: number): Promise<void> {
-    const { checked } = this.shoppingList.items[index];
-    this.shoppingList.items[index].checked = !checked;
-    await postShoppingList(this.shoppingList);
+    const { checked } = this.shoppingList.items[index]
+    this.shoppingList.items[index].checked = !checked
+    await postShoppingList(this.shoppingList)
   }
 
   async deleteItem(index: number): Promise<void> {
-    this.shoppingList.items.splice(index, 1);
-    await postShoppingList(this.shoppingList);
+    this.shoppingList.items.splice(index, 1)
+    await postShoppingList(this.shoppingList)
   }
 }
 </script>
