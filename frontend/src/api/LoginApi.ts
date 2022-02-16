@@ -6,7 +6,7 @@ export interface Credentials {
     password: string
 }
 
-export class ShoppingListApi {
+export class LoginApi {
     static async postLogin(credentials: Credentials) {
 
         const hashed = SHA256(credentials.password).toString()

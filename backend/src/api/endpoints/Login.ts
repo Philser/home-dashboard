@@ -8,7 +8,7 @@ import { InternalServerError } from '../errors/Utils'
 
 
 const PRIVATE_KEY = `
-    -----BEGIN ENCRYPTED PRIVATE KEY-----
+  -----BEGIN ENCRYPTED PRIVATE KEY-----
   -----END ENCRYPTED PRIVATE KEY-----
   `
 
@@ -18,7 +18,6 @@ export function LoginHandler(app: Express) {
             const { username, password } = req.body
 
             const savedUser = await UserModel.findOne({ username }).exec()
-            console.log(savedUser)
 
             if (!savedUser) {
                 // TODO: Proper error message body

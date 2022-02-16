@@ -17,37 +17,40 @@
 </template>
 
 <script lang="ts">
-import { Options, Vue } from 'vue-class-component'
-import { ShoppingListApi } from '../api/LoginApi'
+import { ref } from 'vue'
+import { useRouter } from 'vue-router'
+import { LoginApi } from '../api/LoginApi'
 import { authState } from '../auth'
 
-@Options({
-  data() {
+export default {
+  setup() {
+    const router = useRouter()
+
+    const username = ref('')
+    const password = ref('')
+
+    async function login() {
+      try {
+        // TODO: Receive and set cookie
+        await LoginApi.postLogin({
+          username: username.value,
+          password: password.value,
+        })
+
+        authState.loggedIn = true
+        router.push('/')
+      } catch (e) {
+        // TODO: Show Login Failed error
+        console.error(e)
+      }
+    }
+
     return {
-      username: '',
-      password: '',
+      login,
+      username,
+      password,
     }
   },
-})
-export default class LoginComponent extends Vue {
-  username: string
-
-  password: string
-
-  async login() {
-    console.log(`Posting:' + ${this.username}`)
-    try {
-      await ShoppingListApi.postLogin({
-        username: this.username,
-        password: this.password,
-      })
-
-      authState.loggedIn = true
-      this.$router.push('/')
-    } catch (e) {
-      // TODO: Show Login Failed error
-    }
-  }
 }
 </script>
 

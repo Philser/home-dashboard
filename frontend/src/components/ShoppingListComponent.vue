@@ -45,7 +45,7 @@
 </template>
 
 <script lang="ts">
-import { Options, Vue } from 'vue-class-component'
+import { ref, onMounted } from 'vue'
 import axios from 'axios'
 import { ShoppingList, ShoppingListApi } from '../api/ShoppingListApi'
 
@@ -57,39 +57,44 @@ async function postShoppingList(list: ShoppingList): Promise<void> {
   }
 }
 
-@Options({
-  created() {
-    axios.get('http://localhost:8081/api/shoppinglist').then((resp) => {
-      this.shoppingList = resp.data.shoppingList
-    })
-  },
-  data() {
+export default {
+  setup() {
+    const shoppingList = ref({ items: [] } as ShoppingList)
+
+    const itemInput = ref('')
+
+    async function fetchShoppingList() {
+      axios.get('http://localhost:8081/api/shoppinglist').then((resp) => {
+        shoppingList.value = resp.data.shoppingList
+      })
+    }
+
+    onMounted(fetchShoppingList)
+
+    async function submitItem(): Promise<void> {
+      shoppingList.value.items.push({ name: itemInput.value, checked: false })
+      await postShoppingList(shoppingList.value)
+    }
+
+    async function changeChecked(index: number): Promise<void> {
+      const { checked } = shoppingList.value.items[index]
+      shoppingList.value.items[index].checked = !checked
+      await postShoppingList(shoppingList.value)
+    }
+
+    async function deleteItem(index: number): Promise<void> {
+      shoppingList.value.items.splice(index, 1)
+      await postShoppingList(shoppingList.value)
+    }
+
     return {
-      itemInput: '',
-      shoppingList: { items: [] },
+      submitItem,
+      changeChecked,
+      deleteItem,
+      shoppingList,
+      itemInput,
     }
   },
-})
-export default class ShoppingListComponent extends Vue {
-  shoppingList!: ShoppingList
-
-  itemInput!: string
-
-  async submitItem(): Promise<void> {
-    this.shoppingList.items.push({ name: this.itemInput, checked: false })
-    await postShoppingList(this.shoppingList)
-  }
-
-  async changeChecked(index: number): Promise<void> {
-    const { checked } = this.shoppingList.items[index]
-    this.shoppingList.items[index].checked = !checked
-    await postShoppingList(this.shoppingList)
-  }
-
-  async deleteItem(index: number): Promise<void> {
-    this.shoppingList.items.splice(index, 1)
-    await postShoppingList(this.shoppingList)
-  }
 }
 </script>
 
