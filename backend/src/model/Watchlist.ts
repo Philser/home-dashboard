@@ -23,4 +23,4 @@ const watchlistSchema = new Schema<Watchlist>({
     }
 })
 
-export const WatchlistModel = model<Watchlist>(WATCHLIST_COLLECTION, watchlistSchema)
+export const WatchlistModel = model<Watchlist>(WATCHLIST_COLLECTION, watchlistSchema, WATCHLIST_COLLECTION)

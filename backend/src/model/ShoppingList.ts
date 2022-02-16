@@ -28,4 +28,4 @@ const shoppingListSchema = new Schema<ShoppingList>({
 })
 
 
-export const ShoppingListModel = model<ShoppingList>(SHOPPING_LIST_COLLECTION, shoppingListSchema)
+export const ShoppingListModel = model<ShoppingList>(SHOPPING_LIST_COLLECTION, shoppingListSchema, SHOPPING_LIST_COLLECTION)

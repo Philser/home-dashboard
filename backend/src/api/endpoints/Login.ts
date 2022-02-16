@@ -7,30 +7,35 @@ import * as bcrypt from 'bcrypt'
 import { InternalServerError } from '../errors/Utils'
 
 
-// const PUBLIC_KEY = `
-// -----BEGIN PUBLIC KEY-----
-// MIICIjANBgkqhkiG9w0BAQEFAAOCAg8AMIICCgKCAgEA2H2b4+dlqFlbQPTSx5hP
-// rljZYHZChEq56f6pRJQOgDL4pzALJYJXnOMc8QfF/L/a9Jrr3ehm2VJl3UgPyp0n
-// eElJseWLPNYatD7ab0a7VlHlBij0OWIYV3XkqQDFDdC9n0XysZ7/Wpc+Veoc6dDT
-// +juySXFWgLV/+7VaS9X8/KyI17y/Kk8ytYVyuVziaR6E6zb/82XTwOY7jg+btkDv
-// LbsmH8T7wbeUB6IZHAaupApL05HwAEevrbs2+Kx7Pi7oecPGuPZBtcqJvS4tjCnX
-// 7pfr+WyiQzFR/3+Lo/TPvjbHHQKaXYboZEFMMf3IOOwT/dTYdjF/TiSDlW3j39GG
-// fyxrxx3fLO6zwgfXNhDVNnVHD6KIoIQLmvYqXvwRA/Paa+5FVEvInIJZqnXXrJ46
-// wZl0jAh1686iS7OZUZf8HTVaX7nG7uy7t4OojNPE9kdKsMQkjGFeEdgT1tR83BQw
-// Io7t9OrAnP/vwbfXeic8URqeNAZzsSsBdSzwx9GMa4WyfgiYPMrCNn+GD1GZ5QHh
-// pgM3Sl+t4KZm5lZcF2AY+yu6q8/HRyNS6tBa1MQea/gHEjGd/wGAHAtOP82hX09m
-// Hbm+5LIYee1niFV2rngqagMmjMTI8cbVVcUfBf5qbk3nlDR8aqZRGlyjYUFtCAC3
-// ofm3AM8GIGYQ+nzcrc0bd6UCAwEAAQ==
-// -----END PUBLIC KEY-----`
+const PRIVATE_KEY = `
+-----BEGIN PRIVATE KEY-----
 
-const PRIVATE_KEY = ``
+-----END PRIVATE KEY-----
+`
+
+const PUBLIC_KEY = `
+-----BEGIN PUBLIC KEY-----
+MIICIjANBgkqhkiG9w0BAQEFAAOCAg8AMIICCgKCAgEAwt/ClEbbriX2WQZreOwO
+MFB7/OQDcP/e1Vx++6ez6hk9f3VyM2SvvMIAIVrkM6uxP2b8W+7HTNeYJHEsXSpB
++N9huTe+hPCrXMEbLTTIXx9NIMGmfOR1IC/vitydbN4JscjEloCD6Sd+Da6QU0iL
+tSOWwdAvN4LD1/OCyMk79I/xcZBmk40zNW7wmHVJixbnhpdrK1bZZTf7F7nheMQF
+q7adS5nbNb52qS1PFZY+5SUK3orZup+mAfEALm2VpbRJKy+BSGoqM/7DXW6E7PY4
+WAr39SlZUnkI4bfIbPMuBuywfqacP+gEQZJ6Nzl9zb5SUnB+zEowVCOMSvgpLeB+
+ebmQvWsRdUdoT8r/Bu7LllLvS8stG5sxQ/5h7gW5UKkBhIljdMG/057Ls8A71SDL
+EUMqdt76O0A4KkvK75Qby5L/22zjVGH3xrX/I/0zWIu6TUkoYZ0FHqiKfn0/VdoB
+911Pjx4E45uvqx4frys+tFyyRrKZ1tQPd3mqIftSCufu8jDS1xOGI8VnkxesnLCD
+HY0TeCxcfWML4sDeiJ7rADYTpWHyByP5dDJTSNOqL1T8nHcvY9ifdc9+ZjndS2z+
+Qg1n7EjFQRTXmZrnij2/7fQJQfd0/S30V0oR/atGaddluqr4PyjRjxpDAw8cQcpP
+Prq+IvDuXldWhx8eLBBpJhECAwEAAQ==
+-----END PUBLIC KEY-----
+`
 
 export function LoginHandler(app: Express) {
     app.post('/login', async (req, res) => {
         try {
             const { username, password } = req.body
 
-            const savedUser = await UserModel.findOne({})
+            const savedUser = await UserModel.findOne({ username }).exec()
 
             if (!savedUser) {
                 // TODO: Proper error message body
@@ -45,7 +50,11 @@ export function LoginHandler(app: Express) {
             }
 
             // TODO: Create JWT
-            const token = jwt.sign('test', PRIVATE_KEY)
+            const token = jwt.sign({}, PRIVATE_KEY, { algorithm: 'RS256' })
+            console.log('Signed')
+
+            jwt.verify(token, PUBLIC_KEY)
+            console.log('Verified')
 
             // TODO: Set secure when using HTTPS/make it depending on the config
             res.cookie('token', `${token}; HttpOnly`)

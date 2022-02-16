@@ -1,5 +1,6 @@
 // tslint:disable:no-console
 import { Express } from 'express'
+import { isAuthenticated } from '../../middleware/Auth'
 import { Watchlist, WatchlistModel } from '../../model/Watchlist'
 import { InternalServerError } from '../errors/Utils'
 
@@ -8,7 +9,7 @@ interface WatchlistApiObject {
 }
 
 export function wachlistApi(app: Express) {
-    app.get('/api/watchlist', async (_, res) => {
+    app.get('/api/watchlist', isAuthenticated, async (_, res) => {
         try {
             let watchlist = await WatchlistModel.findOne({})
             if (watchlist === null) {
@@ -22,14 +23,13 @@ export function wachlistApi(app: Express) {
                 }
             }
 
-            res.setHeader('Access-Control-Allow-Origin', '*')
             res.send(returnValue)
         } catch (e) {
             InternalServerError(res, e, 'GET', '/api/watchlist')
         }
     })
 
-    app.post('/api/watchlist', async (req, res) => {
+    app.post('/api/watchlist', isAuthenticated, async (req, res) => {
         try {
             // TODO: Find a validation lib
             if (!req.body || !req.body.watchlist || !req.body.watchlist.movies) {
@@ -44,6 +44,7 @@ export function wachlistApi(app: Express) {
         }
         catch (e) {
             InternalServerError(res, e, 'POST', '/api/watchlist')
+            res.sendStatus(500)
         }
     })
 

@@ -9,15 +9,23 @@
 </template>
 
 <script lang="ts">
-import { defineComponent } from 'vue';
+import { loggedInState } from './auth'
 
-export default defineComponent({
+export default {
   name: 'App',
 
-  data() {
+  setup() {
+    const item = localStorage.getItem('isLoggedIn')
+    if (!item) {
+      localStorage.setItem('isLoggedIn', 'false')
+      loggedInState.setIsLoggedIn(false)
+    } else {
+      loggedInState.setIsLoggedIn(item === 'true')
+    }
+
     return {
       //
-    };
+    }
   },
-});
+}
 </script>

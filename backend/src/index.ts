@@ -1,4 +1,5 @@
 // tslint:disable:no-console
+import cookieParser = require('cookie-parser')
 import express from 'express'
 import cors from 'cors'
 import { initDb } from './db/Mongo'
@@ -11,7 +12,7 @@ const port = 8081 // default port to listen
 
 function initMiddlewares() {
     app.use(cors({
-        origin: '*',
+        origin: 'http://localhost:8080',
         credentials: true,
     }))
 
@@ -19,6 +20,7 @@ function initMiddlewares() {
     app.use(express.urlencoded({
         extended: true
     }))
+    app.use(cookieParser())
 }
 
 
