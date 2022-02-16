@@ -18,7 +18,9 @@ export class WatchlistApi {
                 {
                     watchlist: list,
                 },
-                {},
+                {
+                    withCredentials: true
+                },
             )
             .catch((e) => {
                 alert(`Error saving item: ${e}`)

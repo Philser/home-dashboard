@@ -23,7 +23,6 @@ export function wachlistApi(app: Express) {
                 }
             }
 
-            res.setHeader('Access-Control-Allow-Origin', '*')
             res.send(returnValue)
         } catch (e) {
             InternalServerError(res, e, 'GET', '/api/watchlist')
@@ -45,6 +44,7 @@ export function wachlistApi(app: Express) {
         }
         catch (e) {
             InternalServerError(res, e, 'POST', '/api/watchlist')
+            res.sendStatus(500)
         }
     })
 

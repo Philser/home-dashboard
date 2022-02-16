@@ -24,7 +24,6 @@ export function ShoppingListHandler(app: Express) {
                 }
             }
 
-            res.setHeader('Access-Control-Allow-Origin', '*')
             res.send(returnValue)
         }
         catch (e) {

@@ -1,7 +1,8 @@
 import { createRouter, createWebHistory, RouteRecordRaw } from 'vue-router'
+import { Ref } from 'vue'
 import Home from '../views/Home.vue'
 import Login from '../views/Login.vue'
-import { authState } from '../auth'
+import { loggedInState } from '../auth'
 
 const routes: Array<RouteRecordRaw> = [
   {
@@ -32,7 +33,7 @@ const router = createRouter({
 router.beforeEach((to, _) => {
   console.log(to)
   if (to.path !== '/login') {
-    if (!authState.loggedIn) {
+    if (!loggedInState.isLoggedIn()) {
       router.push('/login')
     }
   }

@@ -17,10 +17,10 @@
 </template>
 
 <script lang="ts">
-import { ref } from 'vue'
+import { Ref, ref } from 'vue'
 import { useRouter } from 'vue-router'
 import { LoginApi } from '../api/LoginApi'
-import { authState } from '../auth'
+import { loggedInState } from '../auth'
 
 export default {
   setup() {
@@ -37,7 +37,7 @@ export default {
           password: password.value,
         })
 
-        authState.loggedIn = true
+        loggedInState.setIsLoggedIn(true)
         router.push('/')
       } catch (e) {
         // TODO: Show Login Failed error

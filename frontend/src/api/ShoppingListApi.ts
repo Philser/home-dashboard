@@ -19,7 +19,9 @@ export class ShoppingListApi {
                 {
                     shoppingList: list,
                 },
-                {},
+                {
+                    withCredentials: true
+                },
             )
             .catch((e) => {
                 alert(`Error saving item: ${e}`)

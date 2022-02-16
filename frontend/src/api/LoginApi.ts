@@ -14,6 +14,6 @@ export class LoginApi {
         await axios.post('http://localhost:8081/login', {
             username: credentials.username,
             password: hashed,
-        })
+        }, { withCredentials: true })
     }
 }

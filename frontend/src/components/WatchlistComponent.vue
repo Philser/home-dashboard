@@ -54,9 +54,11 @@ export default {
     const movieInput = ref('')
 
     async function fetchWatchlist() {
-      axios.get('http://localhost:8081/api/watchlist').then((resp) => {
-        watchlist.value = resp.data.watchlist
-      })
+      axios
+        .get('http://localhost:8081/api/watchlist', { withCredentials: true })
+        .then((resp) => {
+          watchlist.value = resp.data.watchlist
+        })
     }
 
     onMounted(fetchWatchlist)

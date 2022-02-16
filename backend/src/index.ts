@@ -12,7 +12,7 @@ const port = 8081 // default port to listen
 
 function initMiddlewares() {
     app.use(cors({
-        origin: '*',
+        origin: 'http://localhost:8080',
         credentials: true,
     }))
 

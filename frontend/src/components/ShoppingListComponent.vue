@@ -64,9 +64,13 @@ export default {
     const itemInput = ref('')
 
     async function fetchShoppingList() {
-      axios.get('http://localhost:8081/api/shoppinglist').then((resp) => {
-        shoppingList.value = resp.data.shoppingList
-      })
+      axios
+        .get('http://localhost:8081/api/shoppinglist', {
+          withCredentials: true,
+        })
+        .then((resp) => {
+          shoppingList.value = resp.data.shoppingList
+        })
     }
 
     onMounted(fetchShoppingList)
