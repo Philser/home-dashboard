@@ -1,7 +1,8 @@
 // tslint:disable:no-console
 
 import { Express } from 'express'
-import { isAuthenticated } from '../../middleware/Auth'
+import { Config } from '../../config'
+import { getAuthMiddleware } from '../../middleware/Auth'
 import { ShoppingList, ShoppingListModel } from '../../model/ShoppingList'
 import { InternalServerError } from '../errors/Utils'
 
@@ -9,8 +10,8 @@ interface ShoppingListApiObject {
     shoppingList: ShoppingList
 }
 
-export function ShoppingListHandler(app: Express) {
-    app.get('/api/shoppinglist', isAuthenticated, async (_, res) => {
+export function ShoppingListHandler(app: Express, config: Config) {
+    app.get('/api/shoppinglist', getAuthMiddleware(config.publicKeyPem), async (_, res) => {
         try {
             let list = await ShoppingListModel.findOne({})
             if (list === null) {
@@ -31,7 +32,7 @@ export function ShoppingListHandler(app: Express) {
         }
     })
 
-    app.post('/api/shoppinglist', isAuthenticated, async (req, res) => {
+    app.post('/api/shoppinglist', getAuthMiddleware(config.publicKeyPem), async (req, res) => {
         try {
             // TODO: Find a validation lib
             if (!req.body || !req.body.shoppingList || !req.body.shoppingList.items) {

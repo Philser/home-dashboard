@@ -1,6 +1,7 @@
 // tslint:disable:no-console
 import { Express } from 'express'
-import { isAuthenticated } from '../../middleware/Auth'
+import { Config } from '../../config'
+import { getAuthMiddleware } from '../../middleware/Auth'
 import { Watchlist, WatchlistModel } from '../../model/Watchlist'
 import { InternalServerError } from '../errors/Utils'
 
@@ -8,8 +9,8 @@ interface WatchlistApiObject {
     watchlist: Watchlist
 }
 
-export function wachlistApi(app: Express) {
-    app.get('/api/watchlist', isAuthenticated, async (_, res) => {
+export function wachlistApi(app: Express, config: Config) {
+    app.get('/api/watchlist', getAuthMiddleware(config.publicKeyPem), async (_, res) => {
         try {
             let watchlist = await WatchlistModel.findOne({})
             if (watchlist === null) {
@@ -29,7 +30,7 @@ export function wachlistApi(app: Express) {
         }
     })
 
-    app.post('/api/watchlist', isAuthenticated, async (req, res) => {
+    app.post('/api/watchlist', getAuthMiddleware(config.publicKeyPem), async (req, res) => {
         try {
             // TODO: Find a validation lib
             if (!req.body || !req.body.watchlist || !req.body.watchlist.movies) {
