@@ -37,21 +37,16 @@
 
 <script lang="ts">
 import { onMounted, ref } from 'vue'
+import { useRouter } from 'vue-router'
 import axios from 'axios'
-import { Watchlist, WatchlistApi } from '../api/WatchlistApi'
-
-async function postWatchlist(list: Watchlist): Promise<void> {
-  try {
-    WatchlistApi.postWatchlist(list)
-  } catch (e) {
-    // TODO: Handle error :)
-  }
-}
+import { Watchlist, postWatchlist } from '../api/watchlist'
 
 export default {
   setup() {
     const watchlist = ref({ movies: [] } as Watchlist)
     const movieInput = ref('')
+
+    const router = useRouter()
 
     async function fetchWatchlist() {
       axios
@@ -65,12 +60,12 @@ export default {
 
     async function submitMovie(): Promise<void> {
       watchlist.value.movies.push({ title: movieInput.value })
-      await postWatchlist(watchlist.value)
+      await postWatchlist(watchlist.value, router)
     }
 
     async function deleteMovie(index: number): Promise<void> {
       watchlist.value.movies.splice(index, 1)
-      await postWatchlist(watchlist.value)
+      await postWatchlist(watchlist.value, router)
     }
 
     return {

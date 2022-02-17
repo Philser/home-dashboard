@@ -13,18 +13,16 @@
 </template>
 
 <script lang="ts">
-import { defineComponent } from 'vue';
-import ShoppingListComponent from '../components/ShoppingListComponent.vue';
-import WatchlistComponent from '../components/WatchlistComponent.vue';
-import HelloWorld from '../components/HelloWorld.vue';
+import { defineComponent } from 'vue'
+import ShoppingListComponent from '../components/ShoppingListComponent.vue'
+import WatchlistComponent from '../components/WatchlistComponent.vue'
 
 export default defineComponent({
   name: 'Home',
 
   components: {
-    HelloWorld,
     WatchlistComponent,
     ShoppingListComponent,
   },
-});
+})
 </script>

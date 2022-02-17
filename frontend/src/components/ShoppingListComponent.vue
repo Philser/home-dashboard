@@ -46,16 +46,12 @@
 
 <script lang="ts">
 import { ref, onMounted } from 'vue'
-import axios from 'axios'
-import { ShoppingList, ShoppingListApi } from '../api/ShoppingListApi'
-
-async function postShoppingList(list: ShoppingList): Promise<void> {
-  try {
-    await ShoppingListApi.postShoppingList(list)
-  } catch (e) {
-    // TODO: Handle error :)
-  }
-}
+import { useRouter } from 'vue-router'
+import {
+  ShoppingList,
+  postShoppingList,
+  fetchShoppingList,
+} from '../api/shopppingList'
 
 export default {
   setup() {
@@ -63,32 +59,26 @@ export default {
 
     const itemInput = ref('')
 
-    async function fetchShoppingList() {
-      axios
-        .get('http://localhost:8081/api/shoppinglist', {
-          withCredentials: true,
-        })
-        .then((resp) => {
-          shoppingList.value = resp.data.shoppingList
-        })
-    }
+    const router = useRouter()
 
-    onMounted(fetchShoppingList)
+    onMounted(() => {
+      fetchShoppingList(shoppingList, useRouter())
+    })
 
     async function submitItem(): Promise<void> {
       shoppingList.value.items.push({ name: itemInput.value, checked: false })
-      await postShoppingList(shoppingList.value)
+      await postShoppingList(shoppingList.value, router)
     }
 
     async function changeChecked(index: number): Promise<void> {
       const { checked } = shoppingList.value.items[index]
       shoppingList.value.items[index].checked = !checked
-      await postShoppingList(shoppingList.value)
+      await postShoppingList(shoppingList.value, router)
     }
 
     async function deleteItem(index: number): Promise<void> {
       shoppingList.value.items.splice(index, 1)
-      await postShoppingList(shoppingList.value)
+      await postShoppingList(shoppingList.value, router)
     }
 
     return {

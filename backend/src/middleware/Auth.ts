@@ -23,7 +23,7 @@ Prq+IvDuXldWhx8eLBBpJhECAwEAAQ==
 export async function isAuthenticated(req: Request, res: Response, next: NextFunction): Promise<void> {
     try {
         console.log('Cookies: ' + JSON.stringify(req.cookies))
-        if (req.cookies) {
+        if (req.cookies.token) {
             const token = req.cookies.token.split(';')[0]
             console.log(token)
             jwt.verify(token, PUBLIC_KEY, (err: Error, _: any) => {

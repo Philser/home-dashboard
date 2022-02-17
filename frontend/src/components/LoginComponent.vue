@@ -17,9 +17,9 @@
 </template>
 
 <script lang="ts">
-import { Ref, ref } from 'vue'
+import { ref } from 'vue'
 import { useRouter } from 'vue-router'
-import { LoginApi } from '../api/LoginApi'
+import { postLogin } from '../api/login'
 import { loggedInState } from '../auth'
 
 export default {
@@ -31,8 +31,7 @@ export default {
 
     async function login() {
       try {
-        // TODO: Receive and set cookie
-        await LoginApi.postLogin({
+        await postLogin({
           username: username.value,
           password: password.value,
         })
@@ -40,8 +39,7 @@ export default {
         loggedInState.setIsLoggedIn(true)
         router.push('/')
       } catch (e) {
-        // TODO: Show Login Failed error
-        console.error(e)
+        // We don't do anything on login error
       }
     }
 
