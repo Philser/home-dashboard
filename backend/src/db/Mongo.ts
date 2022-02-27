@@ -1,18 +1,19 @@
 // tslint:disable:no-console
 
 import { connect, connection } from 'mongoose'
+import { Config } from '../config'
 
-// TODO: Move to config
-export const MONGO_URI = 'mongodb://localhost/dashboard'
 export const WATCHLIST_COLLECTION = 'watchlist'
 export const SHOPPING_LIST_COLLECTION = 'shoppinglist'
 export const USER_COLLECTION = 'user'
 
 
 
-export async function initDb(): Promise<void> {
+export async function initDb(config: Config): Promise<void> {
     try {
-        await connect(MONGO_URI, { bufferCommands: false, user: 'phil', pass: 'phil' })
+        const mongoUri = `mongodb://${config.dbHost}/${config.dbCollection}`
+        console.log(`Trying to establish DB connection at ${mongoUri}`)
+        await connect(mongoUri, { bufferCommands: false, user: config.dbUser, pass: config.dbPassword })
         connection.on('error', err => {
             console.error(`MongoDB connection reported error: ${err}`)
         }).on('disconnected', reason => {
