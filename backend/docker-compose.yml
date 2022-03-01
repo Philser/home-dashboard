@@ -2,16 +2,23 @@ version: '3.7'
 services:
   api:
     image: ghcr.io/philser/home-dashboard:main
+    ports:
+      - "${PORT:-8080}:${PORT:-8080}"
     environment:
-      - DOMAIN="${DOMAIN:-localhost}"
+      - DOMAIN=${DOMAIN:-localhost}
       - PORT=${PORT:-8080}
-      - KEY_DIRECTORY="${KEY_DIRECTORY:-./keys}"
-      - DB_HOST="${DB_HOST:-localhost}"
-      - DB_USER="${DB_USER}"
-      - DB_PASSWORD="${DB_USER}"
-      - DB_COLLECTION="${DB_COLLECTION:-dashboard}"
+      - KEY_DIRECTORY=${KEY_DIRECTORY:-/keys}
+      - DB_HOST=${DB_HOST:-localhost}
+      - DB_USER=${DB_USER?Missing DB_USER}
+      - DB_PASSWORD=${DB_USER?Missing DB_PASSWORD}
+      - DB_COLLECTION=${DB_COLLECTION:-dashboard}
+    volumes:
+      - ${DOCKERDIR?Missing DOCKERDIR}/keys:${KEY_DIRECTORY:-/keys}
+
   db:
     image: mongo
+    ports:
+      - "27017:27017"
     restart: unless-stopped
     volumes:
       - ${DOCKERDIR}/dashboard/mongo:/data/db

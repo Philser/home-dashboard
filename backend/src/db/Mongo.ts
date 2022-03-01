@@ -11,7 +11,7 @@ export const USER_COLLECTION = 'user'
 
 export async function initDb(config: Config): Promise<void> {
     try {
-        const mongoUri = `mongodb://${config.dbHost}/${config.dbCollection}`
+        const mongoUri = `mongodb://${config.dbHost}:27017/${config.dbCollection}`
         console.log(`Trying to establish DB connection at ${mongoUri}`)
         await connect(mongoUri, { bufferCommands: false, user: config.dbUser, pass: config.dbPassword })
         connection.on('error', err => {
