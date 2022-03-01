@@ -40,7 +40,7 @@ export function parseConfig(): Config {
 
         const domain = process.env.DOMAIN
         if (!domain) {
-            throw new Error(`Missing ${Object.keys({ domain }).pop()}`)
+            throw new Error(`Missing DOMAIN`)
         }
 
         const keys = parsePublicPrivateKeys()
