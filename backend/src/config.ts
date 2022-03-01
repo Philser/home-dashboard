@@ -17,9 +17,8 @@ const DEFAULT_PORT = 8081 // default port to listen
 
 function parsePublicPrivateKeys(): { publicKeyPem: string, privateKeyPem: string } {
     // TODO: Have a configurable absolute path for keys
-    const appDir = dirname(require.main.filename)
-    const publicKeyPem = fs.readFileSync(`${appDir}/../keys/public.pem`).toString()
-    const privateKeyPem = fs.readFileSync(`${appDir}/../keys/private.pem`).toString()
+    const publicKeyPem = fs.readFileSync(`${process.env.KEY_DIRECTORY}/public.pem`).toString()
+    const privateKeyPem = fs.readFileSync(`${process.env.KEY_DIRECTORY}/private.pem`).toString()
 
     return {
         publicKeyPem,
