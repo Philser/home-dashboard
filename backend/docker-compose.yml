@@ -3,12 +3,12 @@ services:
   api:
     image: ghcr.io/philser/home-dashboard:main
     environment:
-      - DOMAIN: "${DOMAIN:-localhost}"
-      - PORT: "${PORT:-8080}"
-      - DB_HOST: "${DB_HOST:-localhost}"
-      - DB_USER: "${DB_USER}"
-      - DB_PASSWORD: "${DB_USER}"
-      - DB_COLLECTION: "${DB_COLLECTION:-dashboard}"
+      - DOMAIN="${DOMAIN:-localhost}"
+      - PORT="${PORT:-8080}"
+      - DB_HOST="${DB_HOST:-localhost}"
+      - DB_USER="${DB_USER}"
+      - DB_PASSWORD="${DB_USER}"
+      - DB_COLLECTION="${DB_COLLECTION:-dashboard}"
   db:
     image: mongo
     restart: unless-stopped
