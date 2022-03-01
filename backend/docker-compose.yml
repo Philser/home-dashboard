@@ -17,8 +17,11 @@ services:
 
   db:
     image: mongo
-    ports:
-      - "27017:27017"
     restart: unless-stopped
+    environment:
+      - MONGO_INITDB_ROOT_USERNAME=phil
+      - MONGO_INITDB_ROOT_PASSWORD=phil
+      - MONGO_INITDB_DATABASE=dashboard
     volumes:
       - ${DOCKERDIR}/dashboard/mongo:/data/db
+      - ${DOCKERDIR}/dashboard/db/:/docker-entrypoint-initdb.d/
