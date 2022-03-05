@@ -12,7 +12,7 @@ const app = express()
 
 function initMiddlewares(config: Config) {
     app.use(cors({
-        origin: `${config.domain}*`,
+        origin: `${config.domain}`,
         credentials: true,
     }))
 
