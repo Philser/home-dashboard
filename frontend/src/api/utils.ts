@@ -15,5 +15,5 @@ export function handleApiError(e: AxiosError, router: Router) {
 export function getApiBaseUrl(): string {
     const port = process.env.PORT ? `:${process.env.PORT}` : ""
 
-    return `${process.env.HTTP_TYPE}://${process.env.API_DOMAIN}${process.env.PORT}`
+    return `${process.env.HTTP_TYPE}://${process.env.API_DOMAIN}${port}`
 }
