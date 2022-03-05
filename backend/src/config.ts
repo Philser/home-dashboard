@@ -1,5 +1,5 @@
-import { dirname } from 'path'
 import * as fs from 'fs'
+import * as dotenv from 'dotenv'
 
 export interface Config {
     publicKeyPem: string
@@ -28,6 +28,7 @@ function parsePublicPrivateKeys(): { publicKeyPem: string, privateKeyPem: string
 
 export function parseConfig(): Config {
     try {
+        dotenv.config()
         let port = DEFAULT_PORT
         if (process.env.PORT) {
             port = parseInt(process.env.PORT, 10)
@@ -48,22 +49,22 @@ export function parseConfig(): Config {
 
         const dbHost = process.env.DB_HOST
         if (!domain) {
-            throw new Error("Missing DB_HOST")
+            throw new Error('Missing DB_HOST')
         }
 
         const dbUser = process.env.DB_USER
         if (!domain) {
-            throw new Error("Missing DB_USER")
+            throw new Error('Missing DB_USER')
         }
 
         const dbPassword = process.env.DB_PASSWORD
         if (!dbPassword) {
-            throw new Error("Missing DB_PASSWORD")
+            throw new Error('Missing DB_PASSWORD')
         }
 
         const dbCollection = process.env.DB_COLLECTION
         if (!dbCollection) {
-            throw new Error("Missing DB_COLLECTION")
+            throw new Error('Missing DB_COLLECTION')
         }
 
 
