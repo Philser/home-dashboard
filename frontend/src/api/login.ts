@@ -1,5 +1,6 @@
 import axios, { AxiosError } from 'axios'
 import { SHA256 } from 'crypto-js'
+import { getApiBaseUrl } from './utils'
 
 export interface Credentials {
     username: string,
@@ -25,7 +26,7 @@ function notifyOfLoginError(e: AxiosError) {
 export async function postLogin(credentials: Credentials) {
     const hashed = SHA256(credentials.password).toString()
 
-    await axios.post('http://localhost:8081/login', {
+    await axios.post(`${getApiBaseUrl()}/login`, {
         username: credentials.username,
         password: hashed,
     }, { withCredentials: true }).catch((e) => {

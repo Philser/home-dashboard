@@ -40,6 +40,7 @@ import { onMounted, ref } from 'vue'
 import { useRouter } from 'vue-router'
 import axios from 'axios'
 import { Watchlist, postWatchlist } from '../api/watchlist'
+import { getApiBaseUrl } from '../api/utils'
 
 export default {
   setup() {
@@ -50,7 +51,7 @@ export default {
 
     async function fetchWatchlist() {
       axios
-        .get('http://localhost:8081/api/watchlist', { withCredentials: true })
+        .get(`${getApiBaseUrl()}/api/watchlist`, { withCredentials: true })
         .then((resp) => {
           watchlist.value = resp.data.watchlist
         })

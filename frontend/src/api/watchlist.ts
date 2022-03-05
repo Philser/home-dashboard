@@ -2,7 +2,7 @@
 /* eslint-disable*/
 import axios from 'axios'
 import { Router } from 'vue-router'
-import handleApiError from './utils'
+import { handleApiError, getApiBaseUrl } from './utils'
 
 export type Movie = {
     title: string
@@ -15,7 +15,7 @@ export type Watchlist = {
 export async function postWatchlist(list: Watchlist, router: Router) {
     axios
         .post(
-            'http://localhost:8081/api/watchlist',
+            `${getApiBaseUrl()}/api/watchlist`,
             {
                 watchlist: list,
             },

@@ -3,7 +3,7 @@
 import axios, { AxiosError } from 'axios'
 import { Ref } from 'vue'
 import { Router } from 'vue-router'
-import handleApiError from './utils'
+import { handleApiError, getApiBaseUrl } from './utils'
 
 export type ShoppingListItem = {
     name: string
@@ -17,7 +17,7 @@ export type ShoppingList = {
 export async function postShoppingList(list: ShoppingList, router: Router) {
     axios
         .post(
-            'http://localhost:8081/api/shoppinglist',
+            `${getApiBaseUrl()}/api/shoppinglist`,
             {
                 shoppingList: list,
             },
@@ -32,7 +32,7 @@ export async function postShoppingList(list: ShoppingList, router: Router) {
 
 export async function fetchShoppingList(shoppingList: Ref<ShoppingList>, router: Router) {
     try {
-        const resp = await axios.get('http://localhost:8081/api/shoppinglist', {
+        const resp = await axios.get(`${getApiBaseUrl()}/api/shoppinglist`, {
             withCredentials: true,
         })
 
