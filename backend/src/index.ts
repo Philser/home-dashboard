@@ -39,7 +39,7 @@ async function server(): Promise<void> {
         // start the Express server
         app.listen(config.port, () => {
             // tslint:disable-next-line:no-console
-            console.log(`server started at http://${config.domain}:${config.port}`)
+            console.log(`server started at ${config.domain}:${config.port}`)
         })
     } catch (e) {
         console.error(`Fatal: ${e}`)

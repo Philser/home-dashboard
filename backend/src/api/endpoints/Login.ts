@@ -31,7 +31,7 @@ export function LoginHandler(app: Express, config: Config) {
             console.log('Signed')
 
             // TODO: Set secure when using HTTPS/make it depending on the config
-            res.cookie('token', `${token}; HttpOnly`)
+            res.cookie('token', `${token}; HttpOnly; SameSite=None; Secure`)
             res.sendStatus(200)
 
         } catch (e) {
