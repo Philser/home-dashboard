@@ -15,7 +15,7 @@ export function notebookHandler(app: Express, config: Config) {
         try {
             let notebook = await NotebookModel.findOne({})
             if (notebook === null) {
-                notebook = new NotebookModel({ text: '' })
+                notebook = new NotebookModel({ text: 'I like improv comedy' })
                 await notebook.save()
             }
 
