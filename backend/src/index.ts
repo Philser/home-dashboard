@@ -12,7 +12,15 @@ const app = express()
 
 function initMiddlewares(config: Config) {
     app.use(cors({
-        origin: `${config.domain}`,
+        origin(origin, callback) {
+            const re = new RegExp(`${config.domain}(\:\d{2,5})?`)
+
+            if (re.exec(origin) === null) {
+                return callback(null, false)
+            }
+
+            return callback(null, true)
+        },
         credentials: true,
     }))
 

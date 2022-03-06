@@ -26,11 +26,9 @@ export function LoginHandler(app: Express, config: Config) {
                 res.sendStatus(401)
             }
 
-            // TODO: Create JWT
             const token = jwt.sign({}, config.privateKeyPem, { algorithm: 'RS256' })
             console.log('Signed')
 
-            // TODO: Set secure when using HTTPS/make it depending on the config
             res.cookie('token', `${token}`, {
                 sameSite: 'none',
                 httpOnly: true,
