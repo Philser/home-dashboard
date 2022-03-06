@@ -1,0 +1,20 @@
+import { Router } from 'vue-router'
+import axios from 'axios'
+import { getApiBaseUrl, handleApiError } from './utils'
+
+export interface Note {
+    text: string
+}
+
+export async function putNote(note: Note, router: Router) {
+    axios.post(`${getApiBaseUrl()}/api/notebook`,
+        {
+            notebook: note,
+        },
+        {
+            withCredentials: true,
+        },
+    ).catch((e) => {
+        handleApiError(e, router)
+    })
+}

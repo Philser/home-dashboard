@@ -9,6 +9,9 @@
         <shopping-list-component />
       </v-col>
     </v-row>
+    <v-row>
+      <notebook-component />
+    </v-row>
   </v-container>
 </template>
 
@@ -16,6 +19,7 @@
 import { defineComponent } from 'vue'
 import ShoppingListComponent from '../components/ShoppingListComponent.vue'
 import WatchlistComponent from '../components/WatchlistComponent.vue'
+import NotebookComponent from '../components/NotebookComponent.vue'
 
 export default defineComponent({
   name: 'Home',
@@ -23,6 +27,7 @@ export default defineComponent({
   components: {
     WatchlistComponent,
     ShoppingListComponent,
+    NotebookComponent,
   },
 })
 </script>
