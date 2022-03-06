@@ -9,7 +9,6 @@ export function getAuthMiddleware(publicKey: string): RequestHandler {
         try {
             if (req.cookies.token) {
                 const token = req.cookies.token.split(';')[0]
-                console.log(token)
                 jwt.verify(token, publicKey, (err: Error, _: any) => {
                     if (err) {
                         res.sendStatus(401)
