@@ -7,6 +7,7 @@ import { wachlistApi } from './api/endpoints/Watchlist'
 import { ShoppingListHandler as shoppingListApi } from './api/endpoints/ShoppingList'
 import { LoginHandler as loginHandler } from './api/endpoints/Login'
 import { Config, parseConfig } from './config'
+import { notebookHandler } from './api/endpoints/Notebook'
 
 const app = express()
 
@@ -42,6 +43,7 @@ async function server(): Promise<void> {
         wachlistApi(app, config)
         shoppingListApi(app, config)
         loginHandler(app, config)
+        notebookHandler(app, config)
 
 
         // start the Express server
@@ -56,3 +58,5 @@ async function server(): Promise<void> {
 }
 
 server().catch(console.dir)
+
+

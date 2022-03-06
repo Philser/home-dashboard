@@ -6,7 +6,7 @@ import { Config } from '../config'
 export const WATCHLIST_COLLECTION = 'watchlist'
 export const SHOPPING_LIST_COLLECTION = 'shoppinglist'
 export const USER_COLLECTION = 'user'
-
+export const NOTEBOOK_COLLECTION = 'notebook'
 
 
 export async function initDb(config: Config): Promise<void> {

@@ -11,14 +11,26 @@
 </template>
 
 <script lang="ts">
-import { ref } from 'vue'
+import { onMounted, ref } from 'vue'
 import { useRouter } from 'vue-router'
+import axios from 'axios'
 import { putNote } from '../api/notebook'
+import { getApiBaseUrl } from '../api/utils'
 
 export default {
   setup() {
     const note = ref('')
     const router = useRouter()
+
+    async function fetchNotebook() {
+      axios
+        .get(`${getApiBaseUrl()}/api/notebook`, { withCredentials: true })
+        .then((resp) => {
+          note.value = resp.data.notebook.text
+        })
+    }
+
+    onMounted(fetchNotebook)
 
     async function updateNote() {
       try {
