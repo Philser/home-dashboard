@@ -2,10 +2,10 @@
   <v-container>
     <hello-world />
     <v-row>
-      <v-col cols="10" sm="6">
+      <v-col cols="16" sm="4">
         <watchlist-component />
       </v-col>
-      <v-col>
+      <v-col sm="4">
         <shopping-list-component />
       </v-col>
     </v-row>

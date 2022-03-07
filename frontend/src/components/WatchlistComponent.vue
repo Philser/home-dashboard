@@ -27,6 +27,7 @@
           name="watchlistInput"
           placeholder="Movie"
           v-model="movieInput"
+          @keyup.enter="submitMovie"
         ></v-text-field>
       </v-col>
       <v-col>
@@ -63,8 +64,12 @@ export default {
     onMounted(fetchWatchlist)
 
     async function submitMovie(): Promise<void> {
+      if (movieInput.value === '') {
+        return
+      }
       watchlist.value.movies.push({ title: movieInput.value })
       await postWatchlist(watchlist.value, router)
+      movieInput.value = ''
     }
 
     async function deleteMovie(index: number): Promise<void> {

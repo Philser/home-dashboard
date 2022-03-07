@@ -38,6 +38,7 @@
           name="shoppingListInput"
           placeholder="Shopping Item"
           v-model="itemInput"
+          @keyup.enter="submitItem"
         ></v-text-field>
       </v-col>
       <v-col>
@@ -69,8 +70,13 @@ export default {
     })
 
     async function submitItem(): Promise<void> {
+      if (itemInput.value === '') {
+        return
+      }
+
       shoppingList.value.items.push({ name: itemInput.value, checked: false })
       await postShoppingList(shoppingList.value, router)
+      itemInput.value = ''
     }
 
     async function changeChecked(index: number): Promise<void> {
