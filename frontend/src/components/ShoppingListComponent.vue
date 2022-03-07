@@ -1,6 +1,9 @@
 <template>
   <v-container>
     <v-card>
+      <v-card-header>
+        <div class="text-overline mb-1">SHOPPING LIST</div>
+      </v-card-header>
       <v-list dense>
         <v-list-item v-for="(item, i) in shoppingList.items" :key="i">
           <v-list-item-action>
