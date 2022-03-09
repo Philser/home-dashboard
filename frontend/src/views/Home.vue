@@ -8,9 +8,14 @@
       <v-col sm="4">
         <shopping-list-component />
       </v-col>
+      <v-col>
+        <notebook-component />
+      </v-col>
     </v-row>
     <v-row>
-      <notebook-component />
+      <v-col>
+        <calendar-component />
+      </v-col>
     </v-row>
   </v-container>
 </template>
@@ -20,6 +25,7 @@ import { defineComponent } from 'vue'
 import ShoppingListComponent from '../components/ShoppingListComponent.vue'
 import WatchlistComponent from '../components/WatchlistComponent.vue'
 import NotebookComponent from '../components/NotebookComponent.vue'
+import CalendarComponent from '../components/CalendarComponent.vue'
 
 export default defineComponent({
   name: 'Home',
@@ -28,6 +34,7 @@ export default defineComponent({
     WatchlistComponent,
     ShoppingListComponent,
     NotebookComponent,
+    CalendarComponent,
   },
 })
 </script>
