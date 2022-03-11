@@ -12,6 +12,8 @@ const notebookSchema = new Schema<Notebook>({
         required: true
     }
 })
-
+notebookSchema.set('toJSON', {
+    virtuals: true
+})
 
 export const NotebookModel = model<Notebook>(NOTEBOOK_COLLECTION, notebookSchema, NOTEBOOK_COLLECTION)

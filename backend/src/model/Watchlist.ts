@@ -22,5 +22,8 @@ const watchlistSchema = new Schema<Watchlist>({
         required: true
     }
 })
+watchlistSchema.set('toJSON', {
+    virtuals: true
+});
 
 export const WatchlistModel = model<Watchlist>(WATCHLIST_COLLECTION, watchlistSchema, WATCHLIST_COLLECTION)

@@ -8,6 +8,7 @@ import { ShoppingListHandler as shoppingListApi } from './api/endpoints/Shopping
 import { LoginHandler as loginHandler } from './api/endpoints/Login'
 import { Config, parseConfig } from './config'
 import { notebookHandler } from './api/endpoints/Notebook'
+import { calendarEventHandler } from './api/endpoints/CalendarEvents'
 
 const app = express()
 
@@ -44,6 +45,7 @@ async function server(): Promise<void> {
         shoppingListApi(app, config)
         loginHandler(app, config)
         notebookHandler(app, config)
+        calendarEventHandler(app, config)
 
 
         // start the Express server

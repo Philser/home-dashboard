@@ -16,5 +16,8 @@ const userSchema = new Schema<User>({
         required: true
     }
 })
+userSchema.set('toJSON', {
+    virtuals: true
+});
 
 export const UserModel = model<User>(USER_COLLECTION, userSchema, USER_COLLECTION)

@@ -1,3 +1,4 @@
 conf/config.yml
 keys/*
 dashboard/mongo
+script.js

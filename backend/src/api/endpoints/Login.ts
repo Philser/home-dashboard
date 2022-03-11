@@ -8,7 +8,7 @@ import { InternalServerError } from '../errors/Utils'
 import { Config } from '../../config'
 
 export function LoginHandler(app: Express, config: Config) {
-    app.post('/login', async (req, res) => {
+    app.post('/api/login', async (req, res) => {
         try {
             const { username, password } = req.body
 
