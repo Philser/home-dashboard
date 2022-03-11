@@ -47,8 +47,8 @@ async function handleDateSelect(selectInfo: DateSelectArg) {
       dateStart,
       dateEnd,
       allDay,
-      creator: 'Joe',
-      subject: 'Mama',
+      creator: '0',
+      subject: '0',
     })
 
     calendarApi.addEvent({
