@@ -12,10 +12,17 @@ export type Watchlist = {
     movies: Movie[]
 }
 
+export async function getWatchlist(): Promise<Watchlist> {
+    const resp = await axios
+        .get(`${getApiBaseUrl()}/watchlist`, { withCredentials: true })
+
+    return resp.data.watchlist
+}
+
 export async function postWatchlist(list: Watchlist, router: Router) {
     axios
         .post(
-            `${getApiBaseUrl()}/api/watchlist`,
+            `${getApiBaseUrl()}/watchlist`,
             {
                 watchlist: list,
             },

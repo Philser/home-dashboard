@@ -24,7 +24,7 @@ export default {
 
     async function fetchNotebook() {
       axios
-        .get(`${getApiBaseUrl()}/api/notebook`, { withCredentials: true })
+        .get(`${getApiBaseUrl()}/notebook`, { withCredentials: true })
         .then((resp) => {
           note.value = resp.data.notebook.text
         })

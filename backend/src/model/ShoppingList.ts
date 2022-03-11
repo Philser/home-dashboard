@@ -26,6 +26,8 @@ const shoppingListSchema = new Schema<ShoppingList>({
         type: [shoppingListItemSchema]
     }
 })
-
+shoppingListSchema.set('toJSON', {
+    virtuals: true
+})
 
 export const ShoppingListModel = model<ShoppingList>(SHOPPING_LIST_COLLECTION, shoppingListSchema, SHOPPING_LIST_COLLECTION)

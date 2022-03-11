@@ -56,5 +56,9 @@
     "trailingComma": "all",
     "semi": false
   },
-  "eslintConfig": {}
+  "eslintConfig": {
+    "rules": {
+      "no-restricted-syntax": "off"
+    }
+  }
 }

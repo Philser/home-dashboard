@@ -19,5 +19,6 @@ module.exports = {
         'vue/multi-word-component-names': ['off'],
         semi: 0,
         'import/prefer-default-export': 0,
+        'no-restriced-syntax': 'off',
     },
 };

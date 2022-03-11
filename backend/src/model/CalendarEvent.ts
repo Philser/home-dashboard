@@ -3,7 +3,9 @@ import { CALENDAR_EVENT_COLLECTION } from '../db/Mongo'
 
 export interface CalendarEvent {
     title: string,
-    date: Date,
+    dateStart: Date,
+    dateEnd: Date,
+    allDay: boolean,
     creator: string,
     subject: string,
 }
@@ -14,8 +16,16 @@ const calendarEventSchema = new Schema<CalendarEvent>({
         type: String,
         required: true
     },
-    date: {
+    dateStart: {
         type: Date,
+        required: true
+    },
+    dateEnd: {
+        type: Date,
+        required: true
+    },
+    allDay: {
+        type: Boolean,
         required: true
     },
     creator: {
@@ -27,5 +37,6 @@ const calendarEventSchema = new Schema<CalendarEvent>({
         required: true,
     },
 })
+
 
 export const CalendarEventModel = model<CalendarEvent>(CALENDAR_EVENT_COLLECTION, calendarEventSchema, CALENDAR_EVENT_COLLECTION)

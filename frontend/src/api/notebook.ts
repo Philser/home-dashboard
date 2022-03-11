@@ -7,7 +7,7 @@ export interface Note {
 }
 
 export async function putNote(note: Note, router: Router) {
-    axios.put(`${getApiBaseUrl()}/api/notebook`,
+    axios.put(`${getApiBaseUrl()}/notebook`,
         {
             notebook: note,
         },

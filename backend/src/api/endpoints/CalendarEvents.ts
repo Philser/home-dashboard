@@ -1,11 +1,10 @@
 // tslint:disable:no-console
 
-import { Express, Response } from 'express'
+import { Express } from 'express'
 import { Config } from '../../config'
 import { getAuthMiddleware } from '../../middleware/Auth'
 import { InternalServerError } from '../errors/Utils'
 import { CalendarEvent, CalendarEventModel } from '../../model/CalendarEvent'
-import { Document } from 'mongoose'
 
 interface CalendarEventApiObject extends CalendarEvent {
     id?: string
@@ -15,27 +14,44 @@ interface CalendarEventsApiGet {
 }
 
 function eventInputIsValid(eventInput: any) {
-    if (!eventInput?.title || !eventInput?.date || !eventInput?.creator || !eventInput?.subject) {
+    // TODO: Validation lib?
+    if (!Object.prototype.hasOwnProperty.call(eventInput, 'title')
+        || !Object.prototype.hasOwnProperty.call(eventInput, 'dateStart')
+        || !Object.prototype.hasOwnProperty.call(eventInput, 'dateEnd')
+        || !Object.prototype.hasOwnProperty.call(eventInput, 'allDay')
+        || !Object.prototype.hasOwnProperty.call(eventInput, 'creator')
+        || !Object.prototype.hasOwnProperty.call(eventInput, 'subject')
+    )
         return false
+
+
+    const dateStart = Date.parse(eventInput.dateStart)
+    const dateEnd = Date.parse(eventInput.dateEnd)
+
+    if (isNaN(dateStart) || isNaN(dateEnd) || dateEnd < dateStart) {
+        return false
+    }
+
+    if (dateStart === dateEnd) {
+        return eventInput.allDay === true
     }
 
     return true
 }
 
 export function calendarEventHandler(app: Express, config: Config) {
-    app.get('/api/events', getAuthMiddleware(config.publicKeyPem), async (_, res) => {
+    app.get('/api/calendarEvents', getAuthMiddleware(config.publicKeyPem), async (_, res) => {
         try {
             const returnValue: CalendarEventsApiGet = {
                 events: []
             }
 
-            const entries = await CalendarEventModel.find({}).exec()
+            const entries = await CalendarEventModel.find({}).lean().exec()
             if (entries !== null) {
                 let event: CalendarEvent
                 for (const entry of entries) {
-                    event = {
-                        ...entry
-                    }
+                    event = entry
+
                     returnValue.events.push(event)
                 }
             }
@@ -47,12 +63,13 @@ export function calendarEventHandler(app: Express, config: Config) {
         }
     })
 
-    // TODO
-    app.post('/api/events', getAuthMiddleware(config.publicKeyPem), async (req, res) => {
+    // TODO check creator & subject are valid IDs
+    app.post('/api/calendarEvents', getAuthMiddleware(config.publicKeyPem), async (req, res) => {
         try {
             // TODO: Find a validation lib
             // TODO: Properly validate event
             if (!eventInputIsValid(req.body?.event)) {
+                console.error(`Invalid POST event input: ${JSON.stringify(req.body)}`)
                 res.sendStatus(400)
                 return
             }
@@ -69,8 +86,7 @@ export function calendarEventHandler(app: Express, config: Config) {
         }
     })
 
-    // TODO
-    app.put('/api/events', getAuthMiddleware(config.publicKeyPem), async (req, res) => {
+    app.put('/api/calendarEvents', getAuthMiddleware(config.publicKeyPem), async (req, res) => {
         try {
             // TODO: Find a validation lib
             if (!eventInputIsValid(req.body?.event) || !req.body?.event?.id) {
@@ -87,7 +103,9 @@ export function calendarEventHandler(app: Express, config: Config) {
 
             event.title = eventInput.title
             event.subject = eventInput.subject
-            event.date = eventInput.date
+            event.dateStart = eventInput.dateStart
+            event.dateEnd = eventInput.dateEnd
+            event.allDay = eventInput.allDay
             event.creator = eventInput.creator
             await event.save()
 
@@ -98,8 +116,7 @@ export function calendarEventHandler(app: Express, config: Config) {
         }
     })
 
-    // TODO
-    app.delete('/api/events', getAuthMiddleware(config.publicKeyPem), async (req, res) => {
+    app.delete('/api/calendarEvents', getAuthMiddleware(config.publicKeyPem), async (req, res) => {
         try {
             // TODO: Find a validation lib
             if (!req.body?.event?.id) {

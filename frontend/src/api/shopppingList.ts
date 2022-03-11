@@ -17,7 +17,7 @@ export type ShoppingList = {
 export async function postShoppingList(list: ShoppingList, router: Router) {
     axios
         .post(
-            `${getApiBaseUrl()}/api/shoppinglist`,
+            `${getApiBaseUrl()}/shoppinglist`,
             {
                 shoppingList: list,
             },
@@ -32,7 +32,7 @@ export async function postShoppingList(list: ShoppingList, router: Router) {
 
 export async function fetchShoppingList(shoppingList: Ref<ShoppingList>, router: Router) {
     try {
-        const resp = await axios.get(`${getApiBaseUrl()}/api/shoppinglist`, {
+        const resp = await axios.get(`${getApiBaseUrl()}/shoppinglist`, {
             withCredentials: true,
         })
 

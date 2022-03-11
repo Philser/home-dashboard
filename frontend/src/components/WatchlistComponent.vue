@@ -43,7 +43,7 @@
 import { onMounted, ref } from 'vue'
 import { useRouter } from 'vue-router'
 import axios from 'axios'
-import { Watchlist, postWatchlist } from '../api/watchlist'
+import { Watchlist, postWatchlist, getWatchlist } from '../api/watchlist'
 import { getApiBaseUrl } from '../api/utils'
 
 export default {
@@ -54,11 +54,7 @@ export default {
     const router = useRouter()
 
     async function fetchWatchlist() {
-      axios
-        .get(`${getApiBaseUrl()}/api/watchlist`, { withCredentials: true })
-        .then((resp) => {
-          watchlist.value = resp.data.watchlist
-        })
+      watchlist.value = await getWatchlist()
     }
 
     onMounted(fetchWatchlist)

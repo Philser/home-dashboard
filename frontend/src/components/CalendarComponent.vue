@@ -12,17 +12,79 @@
 </template>
 
 <script lang='ts'>
+/* eslint-disable no-restricted-syntax */
+// TODO: how to disable globally?
 import '@fullcalendar/core/vdom' // solve problem with Vite
 import FullCalendar, {
   CalendarOptions,
   EventApi,
   DateSelectArg,
   EventClickArg,
+  EventInput,
 } from '@fullcalendar/vue3'
 import dayGridPlugin from '@fullcalendar/daygrid'
 import timeGridPlugin from '@fullcalendar/timegrid'
 import interactionPlugin from '@fullcalendar/interaction'
 import { Ref, ref } from 'vue'
+import { getEvents, postEvent } from '../api/calendarEvents'
+
+async function handleDateSelect(selectInfo: DateSelectArg) {
+  try {
+    const title = prompt('Enter a title')
+    const calendarApi = selectInfo.view.calendar
+
+    calendarApi.unselect() // clear date selection
+
+    if (!title) {
+      return
+    }
+
+    const dateStart = new Date(selectInfo.startStr)
+    const dateEnd = new Date(selectInfo.endStr)
+    const { allDay } = selectInfo
+    const eventId = await postEvent({
+      title,
+      dateStart,
+      dateEnd,
+      allDay,
+      creator: 'Joe',
+      subject: 'Mama',
+    })
+
+    calendarApi.addEvent({
+      id: eventId,
+      title,
+      start: selectInfo.startStr,
+      end: selectInfo.endStr,
+      allDay: selectInfo.allDay,
+    })
+  } catch (e) {
+    alert(`Saving event failed: ${e}`)
+  }
+}
+
+async function getInitialEvents(): Promise<EventInput[]> {
+  try {
+    const eventInput = []
+    const apiEvents = await getEvents()
+    for (const event of apiEvents) {
+      const start = new Date(event.dateStart)
+      const end = new Date(event.dateEnd)
+      eventInput.push({
+        id: event.id,
+        title: event.title,
+        start,
+        end,
+        allDay: event.allDay,
+      })
+    }
+    console.log(`Done getting events: ${JSON.stringify(eventInput)}`)
+    return eventInput
+  } catch (e) {
+    alert(`Could not get calendar events: ${e}`)
+    return []
+  }
+}
 
 export default {
   components: {
@@ -30,23 +92,6 @@ export default {
   },
   setup() {
     const currentEvents: Ref<EventApi[]> = ref([])
-
-    function handleDateSelect(selectInfo: DateSelectArg) {
-      const title = prompt('Please enter a new title for your event')
-      const calendarApi = selectInfo.view.calendar
-
-      calendarApi.unselect() // clear date selection
-
-      if (title) {
-        calendarApi.addEvent({
-          id: '1',
-          title,
-          start: selectInfo.startStr,
-          end: selectInfo.endStr,
-          allDay: selectInfo.allDay,
-        })
-      }
-    }
 
     function handleEventClick(clickInfo: EventClickArg) {
       clickInfo.event.remove()
@@ -56,7 +101,12 @@ export default {
       currentEvents.value = events
     }
 
-    const calendarOptions: Ref<CalendarOptions> = ref({
+    const eventsRef: Ref<EventInput[]> = ref([])
+    getInitialEvents().then((init) => {
+      eventsRef.value = init
+    })
+
+    const calendarOptions = ref({
       plugins: [
         dayGridPlugin,
         timeGridPlugin,
@@ -73,6 +123,7 @@ export default {
       selectMirror: true,
       dayMaxEvents: true,
       weekends: true,
+      events: eventsRef,
       select: handleDateSelect,
       eventClick: handleEventClick,
       eventsSet: handleEvents,
@@ -83,14 +134,14 @@ export default {
         */
     })
 
-    function handleWeekensToggle() {
+    function handleWeekendsToggle() {
       calendarOptions.value.weekends = !calendarOptions.value.weekends // update a property
     }
 
     return {
       calendarOptions,
       currentEvents,
-      handleWeekensToggle,
+      handleWeekendsToggle,
     }
   },
 }
