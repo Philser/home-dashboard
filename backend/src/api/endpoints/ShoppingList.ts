@@ -13,7 +13,7 @@ interface ShoppingListApiObject {
 export function ShoppingListHandler(app: Express, config: Config) {
     app.get('/api/shoppinglist', getAuthMiddleware(config.publicKeyPem), async (_, res) => {
         try {
-            let list = await ShoppingListModel.findOne({})
+            let list = await ShoppingListModel.findOne({}).exec()
             if (list === null) {
                 list = new ShoppingListModel({ items: [] })
                 await list.save()
@@ -35,12 +35,12 @@ export function ShoppingListHandler(app: Express, config: Config) {
     app.post('/api/shoppinglist', getAuthMiddleware(config.publicKeyPem), async (req, res) => {
         try {
             // TODO: Find a validation lib
-            if (!req.body || !req.body.shoppingList || !req.body.shoppingList.items) {
+            if (!req.body?.shoppingList?.items) {
                 res.sendStatus(400)
                 return
             }
 
-            const persistentList = await ShoppingListModel.findOne()
+            const persistentList = await ShoppingListModel.findOne().exec()
             await ShoppingListModel.replaceOne({ _id: persistentList._id }, req.body.shoppingList)
 
             res.sendStatus(200)

@@ -12,7 +12,7 @@ interface WatchlistApiObject {
 export function wachlistApi(app: Express, config: Config) {
     app.get('/api/watchlist', getAuthMiddleware(config.publicKeyPem), async (_, res) => {
         try {
-            let watchlist = await WatchlistModel.findOne({})
+            let watchlist = await WatchlistModel.findOne({}).exec()
             if (watchlist === null) {
                 watchlist = new WatchlistModel({ movies: [] })
                 await watchlist.save()
@@ -33,13 +33,13 @@ export function wachlistApi(app: Express, config: Config) {
     app.post('/api/watchlist', getAuthMiddleware(config.publicKeyPem), async (req, res) => {
         try {
             // TODO: Find a validation lib
-            if (!req.body || !req.body.watchlist || !req.body.watchlist.movies) {
+            if (!req.body?.watchlist?.movies) {
                 res.sendStatus(400)
                 return
             }
 
-            const persistentList = await WatchlistModel.findOne({})
-            await WatchlistModel.replaceOne({ _id: persistentList._id }, { movies: req.body.watchlist.movies })
+            const persistentList = await WatchlistModel.findOne({}).exec()
+            await WatchlistModel.replaceOne({ _id: persistentList._id }, { movies: req.body.watchlist.movies }).exec()
 
             res.sendStatus(200)
         }

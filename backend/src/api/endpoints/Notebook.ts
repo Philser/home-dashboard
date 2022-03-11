@@ -13,7 +13,7 @@ interface NotebookApiObject {
 export function notebookHandler(app: Express, config: Config) {
     app.get('/api/notebook', getAuthMiddleware(config.publicKeyPem), async (_, res) => {
         try {
-            let notebook = await NotebookModel.findOne({})
+            let notebook = await NotebookModel.findOne({}).exec()
             if (notebook === null) {
                 notebook = new NotebookModel({ text: 'I like improv comedy' })
                 await notebook.save()
@@ -35,14 +35,14 @@ export function notebookHandler(app: Express, config: Config) {
     app.put('/api/notebook', getAuthMiddleware(config.publicKeyPem), async (req, res) => {
         try {
             // TODO: Find a validation lib
-            if (!req.body || !req.body.notebook || !req.body.notebook.text) {
+            if (!req?.body?.notebook?.text) {
                 res.sendStatus(400)
                 return
             }
 
-            let notebook = await NotebookModel.findOne()
+            let notebook = await NotebookModel.findOne().exec()
             if (notebook) {
-                await NotebookModel.replaceOne({ _id: notebook._id }, req.body.notebook)
+                await NotebookModel.replaceOne({ _id: notebook._id }, req.body.notebook).exec()
             }
             else {
                 notebook = new NotebookModel({ text: req.body.notebook.text })
