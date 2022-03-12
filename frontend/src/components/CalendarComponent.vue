@@ -23,20 +23,37 @@
             id="eventTitleInput"
             name="eventTitleInput"
             label="Title"
+            v-model="datePickerTitle"
           ></v-text-field>
           <v-list>
             <v-list-item>
               <v-col>
                 <v-list-item-title>{{
-                  dialogStartDateString
+                  buildDialogDateString(
+                    new Date(dateSelectInfo.startStr),
+                    dateSelectInfo.allDay,
+                    false,
+                  )
                 }}</v-list-item-title>
               </v-col>
               <v-list-item-title>--</v-list-item-title>
               <v-col>
-                <v-list-item-title>{{ dialogEndDateString }}</v-list-item-title>
+                <v-list-item-title>{{
+                  buildDialogDateString(
+                    new Date(dateSelectInfo.endStr),
+                    dateSelectInfo.allDay,
+                    true,
+                  )
+                }}</v-list-item-title>
               </v-col>
             </v-list-item>
           </v-list>
+          <v-card-actions>
+            <v-col class="text-right">
+              <v-btn @click="datePickerIsActive = false">Cancel</v-btn>
+              <v-btn @click="saveSelectedDateWrapper()">Save</v-btn>
+            </v-col>
+          </v-card-actions>
         </v-card>
       </v-dialog>
       <FullCalendar class="demo-app-calendar" :options="calendarOptions">
@@ -65,10 +82,8 @@ import interactionPlugin from '@fullcalendar/interaction'
 import { Ref, ref } from 'vue'
 import { getEvents, postEvent } from '../api/calendarEvents'
 
-async function handleDateSelect(selectInfo: DateSelectArg) {
+async function saveSelectedDate(selectInfo: DateSelectArg, title: string) {
   try {
-    // const title = prompt('Enter a title')
-    const title = ''
     const calendarApi = selectInfo.view.calendar
 
     calendarApi.unselect() // clear date selection
@@ -125,12 +140,10 @@ async function getInitialEvents(): Promise<EventInput[]> {
 }
 
 function buildDialogDateString(
-  startDateString: string,
+  date: Date,
   allDay: boolean,
   isEndDate: boolean,
 ): string {
-  const date = new Date(startDateString)
-
   if (isEndDate && allDay) {
     // endStr is exclusive for the fullCalendar component, which means it stores
     // the next day if it is an all-day event.
@@ -144,7 +157,7 @@ function buildDialogDateString(
   }.${date.getFullYear()}`
 
   if (!allDay) {
-    const minutes = date.getMinutes() === 0 ? '' : `${date.getMinutes()}`
+    const minutes = date.getMinutes() === 0 ? '00' : `${date.getMinutes()}`
     dialogDateString = `${dialogDateString} ${date.getHours()}:${minutes}`
   }
 
@@ -158,26 +171,22 @@ export default {
   setup() {
     const datePickerIsActive = ref(false)
 
+    const datePickerTitle = ref('')
+
     const currentEvents: Ref<EventApi[]> = ref([])
 
-    const dialogStartDateString = ref('Init')
-    const dialogEndDateString = ref('Init')
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const dateSelectInfo: Ref<DateSelectArg> = ref({} as any)
+
+    function saveSelectedDateWrapper() {
+      saveSelectedDate(dateSelectInfo.value, datePickerTitle.value)
+      datePickerTitle.value = ''
+      datePickerIsActive.value = false
+    }
 
     function handleDateSelectWrapper(selectInfo: DateSelectArg) {
-      dialogStartDateString.value = buildDialogDateString(
-        selectInfo.startStr,
-        selectInfo.allDay,
-        false,
-      )
-
-      dialogEndDateString.value = buildDialogDateString(
-        selectInfo.endStr,
-        selectInfo.allDay,
-        true,
-      )
-
+      dateSelectInfo.value = { ...selectInfo }
       datePickerIsActive.value = true
-      handleDateSelect(selectInfo)
     }
 
     function handleEventClick(clickInfo: EventClickArg) {
@@ -231,8 +240,10 @@ export default {
       currentEvents,
       handleWeekendsToggle,
       datePickerIsActive,
-      dialogStartDateString,
-      dialogEndDateString,
+      datePickerTitle,
+      dateSelectInfo,
+      buildDialogDateString,
+      saveSelectedDateWrapper,
     }
   },
 }
