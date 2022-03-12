@@ -1,6 +1,44 @@
 <template>
   <div class="demo-app">
     <div class="demo-app-main">
+      <!-- date pick dialog -->
+      <v-dialog
+        content-class="v-dialog--custom"
+        v-model="datePickerIsActive"
+        persistent
+      >
+        <v-card>
+          <div style="display: flex; justify-content: flex-end">
+            <v-btn
+              @click="datePickerIsActive = false"
+              variant="plain"
+              class="ma-2"
+              icon="mdi-close"
+            >
+            </v-btn>
+          </div>
+
+          <v-text-field
+            type="text"
+            id="eventTitleInput"
+            name="eventTitleInput"
+            label="Title"
+          ></v-text-field>
+          <v-list>
+            <v-list-item>
+              <v-col>
+                <v-list-item-title>{{
+                  dialogStartDateString
+                }}</v-list-item-title>
+              </v-col>
+              <v-list-item-title>--</v-list-item-title>
+              <v-col>
+                <v-list-item-title>{{ dialogEndDateString }}</v-list-item-title>
+              </v-col>
+            </v-list-item>
+          </v-list>
+        </v-card>
+      </v-dialog>
       <FullCalendar class="demo-app-calendar" :options="calendarOptions">
         <template v-slot:eventContent="arg">
           <b>{{ arg.timeText }}</b>
@@ -16,7 +54,6 @@
 // TODO: how to disable globally?
 import '@fullcalendar/core/vdom' // solve problem with Vite
 import FullCalendar, {
-  CalendarOptions,
   EventApi,
   DateSelectArg,
   EventClickArg,
@@ -30,7 +67,8 @@ import { getEvents, postEvent } from '../api/calendarEvents'
 
 async function handleDateSelect(selectInfo: DateSelectArg) {
   try {
-    const title = prompt('Enter a title')
+    // const title = prompt('Enter a title')
+    const title = ''
     const calendarApi = selectInfo.view.calendar
 
     calendarApi.unselect() // clear date selection
@@ -78,7 +116,7 @@ async function getInitialEvents(): Promise<EventInput[]> {
         allDay: event.allDay,
       })
     }
-    console.log(`Done getting events: ${JSON.stringify(eventInput)}`)
+
     return eventInput
   } catch (e) {
     alert(`Could not get calendar events: ${e}`)
@@ -86,14 +124,64 @@ async function getInitialEvents(): Promise<EventInput[]> {
   }
 }
 
+function buildDialogDateString(
+  startDateString: string,
+  allDay: boolean,
+  isEndDate: boolean,
+): string {
+  const date = new Date(startDateString)
+
+  if (isEndDate && allDay) {
+    // endStr is exclusive for the fullCalendar component, which means it stores
+    // the next day if it is an all-day event.
+    // For our dialog, however, we want to display the last day that
+    // is still affected by the event
+    date.setDate(date.getDate() - 1)
+  }
+
+  let dialogDateString = `${date.getDate()}.${
+    date.getMonth() + 1
+  }.${date.getFullYear()}`
+
+  if (!allDay) {
+    const minutes = date.getMinutes() === 0 ? '' : `${date.getMinutes()}`
+    dialogDateString = `${dialogDateString} ${date.getHours()}:${minutes}`
+  }
+
+  return dialogDateString
+}
+
 export default {
   components: {
     FullCalendar,
   },
   setup() {
+    const datePickerIsActive = ref(false)
+
     const currentEvents: Ref<EventApi[]> = ref([])
 
+    const dialogStartDateString = ref('Init')
+    const dialogEndDateString = ref('Init')
+
+    function handleDateSelectWrapper(selectInfo: DateSelectArg) {
+      dialogStartDateString.value = buildDialogDateString(
+        selectInfo.startStr,
+        selectInfo.allDay,
+        false,
+      )
+
+      dialogEndDateString.value = buildDialogDateString(
+        selectInfo.endStr,
+        selectInfo.allDay,
+        true,
+      )
+
+      datePickerIsActive.value = true
+      handleDateSelect(selectInfo)
+    }
+
     function handleEventClick(clickInfo: EventClickArg) {
+      datePickerIsActive.value = true
       clickInfo.event.remove()
     }
 
@@ -124,7 +212,7 @@ export default {
       dayMaxEvents: true,
       weekends: true,
       events: eventsRef,
-      select: handleDateSelect,
+      select: handleDateSelectWrapper,
       eventClick: handleEventClick,
       eventsSet: handleEvents,
       /* you can update a remote database when these fire:
@@ -142,6 +230,9 @@ export default {
       calendarOptions,
       currentEvents,
       handleWeekendsToggle,
+      datePickerIsActive,
+      dialogStartDateString,
+      dialogEndDateString,
     }
   },
 }
@@ -195,5 +286,9 @@ b {
   /* the calendar root */
   max-width: 1100px;
   margin: 0 auto;
+}
+
+.v-dialog--custom {
+  width: 30%;
 }
 </style>
