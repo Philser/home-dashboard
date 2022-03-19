@@ -159,7 +159,6 @@ const CATEGORY_TO_COLOR_MAPPING = {
 }
 
 function getCategoryColor(category: string) {
-  console.log(`Color:${category}`)
   return (
     CATEGORY_TO_COLOR_MAPPING[category] ||
     CATEGORY_TO_COLOR_MAPPING[DEFAULT_EVENT_CATEGORY]
