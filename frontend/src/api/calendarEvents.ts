@@ -11,6 +11,7 @@ export interface CalendarEvent {
     allDay: boolean,
     creator: string,
     subject: string,
+    category: string
 }
 
 export async function postEvent(event: CalendarEvent): Promise<EventId> {

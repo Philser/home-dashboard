@@ -58,6 +58,46 @@
                 }}</v-list-item-title>
               </v-col>
             </v-list-item>
+            <v-list-item>
+              <v-menu top v-model="categoryPickerIsActive">
+                <template v-slot:activator="{ props }">
+                  <v-btn icon v-bind="props">
+                    <v-icon :color="getCategoryColor(datePickInfo.category)"
+                      >mdi-circle</v-icon
+                    ></v-btn
+                  >
+                  <v-subheader> {{ datePickInfo.category }}</v-subheader>
+                </template>
+                <v-card>
+                  <v-list>
+                    <v-list-item
+                      v-for="(item, i) in Object.keys(
+                        CATEGORY_TO_COLOR_MAPPING,
+                      )"
+                      :key="i"
+                    >
+                      <v-list-item-avatar left>
+                        <v-btn
+                          @click="
+                            ;(datePickInfo.category = item),
+                              (categoryPickerIsActive = false)
+                          "
+                          icon
+                          v-bind="props"
+                        >
+                          <v-icon :color="getCategoryColor(item)"
+                            >mdi-circle</v-icon
+                          >
+                        </v-btn>
+                      </v-list-item-avatar>
+                      <v-list-item-title>
+                        {{ item }}
+                      </v-list-item-title>
+                    </v-list-item>
+                  </v-list>
+                </v-card>
+              </v-menu>
+            </v-list-item>
           </v-list>
           <v-card-actions>
             <v-col class="text-right">
@@ -79,6 +119,7 @@
 
 <script lang='ts'>
 /* eslint-disable no-restricted-syntax */
+/* eslint-disable operator-linebreak */
 // TODO: how to disable globally?
 import '@fullcalendar/core/vdom' // solve problem with Vite
 import FullCalendar, {
@@ -106,6 +147,23 @@ interface DatePickInfo {
   calendarApi: CalendarApi
   title?: string
   eventId?: string
+  category: string
+}
+
+const EVENT_CATEGORY_PROP_NAME = 'eventCategory'
+const DEFAULT_EVENT_CATEGORY = 'General'
+const CATEGORY_TO_COLOR_MAPPING = {
+  [DEFAULT_EVENT_CATEGORY]: '#4682B4',
+  Phil: '#8A2BE2',
+  Katya: '#FA8072',
+}
+
+function getCategoryColor(category: string) {
+  console.log(`Color:${category}`)
+  return (
+    CATEGORY_TO_COLOR_MAPPING[category] ||
+    CATEGORY_TO_COLOR_MAPPING[DEFAULT_EVENT_CATEGORY]
+  )
 }
 
 async function saveEvent(datePickInfo: DatePickInfo) {
@@ -137,30 +195,36 @@ async function saveEvent(datePickInfo: DatePickInfo) {
           dateStart,
           dateEnd,
           allDay,
+          category: datePickInfo.category,
           creator: '0',
           subject: '0',
         },
         datePickInfo.eventId,
       )
-      calEvent.remove()
+      calEvent.remove() // there's no updating a calendar event, so we remove and re-add it
     } else {
       eventId = await postEvent({
         title: datePickInfo.title,
         dateStart,
         dateEnd,
         allDay,
+        category: datePickInfo.category,
         creator: '0',
         subject: '0',
       })
     }
 
-    calendarApi.addEvent({
+    const color = getCategoryColor(datePickInfo.category)
+    const newEvent = calendarApi.addEvent({
       id: eventId,
       title: datePickInfo.title,
       start: datePickInfo.startStr,
       end: datePickInfo.endStr,
       allDay: datePickInfo.allDay,
+      backgroundColor: color,
+      borderColor: color,
     })
+    newEvent.setExtendedProp(EVENT_CATEGORY_PROP_NAME, datePickInfo.category)
   } catch (e) {
     alert(`Saving event failed: ${e}`)
   }
@@ -193,12 +257,15 @@ async function getInitialEvents(): Promise<EventInput[]> {
     for (const event of apiEvents) {
       const start = new Date(event.dateStart)
       const end = new Date(event.dateEnd)
+      const color = getCategoryColor(event.category)
       eventInput.push({
         id: event.id,
         title: event.title,
         start,
         end,
         allDay: event.allDay,
+        backgroundColor: color,
+        borderColor: color,
       })
     }
 
@@ -240,6 +307,7 @@ export default {
   },
   setup() {
     const datePickerIsActive = ref(false)
+    const categoryPickerIsActive = ref(false)
 
     const currentEvents: Ref<EventApi[]> = ref([])
 
@@ -257,6 +325,7 @@ export default {
         endStr: selectInfo.endStr,
         allDay: selectInfo.allDay,
         calendarApi: selectInfo.view.calendar,
+        category: DEFAULT_EVENT_CATEGORY,
       }
       datePickerIsActive.value = true
     }
@@ -269,6 +338,11 @@ export default {
         calendarApi: clickInfo.view.calendar,
         title: clickInfo.event.title,
         eventId: clickInfo.event.id,
+        category:
+          // Prettier issue: https://github.com/prettier/prettier/issues/3806
+          // eslint-disable-next-line operator-linebreak
+          clickInfo.event.extendedProps[EVENT_CATEGORY_PROP_NAME] ||
+          DEFAULT_EVENT_CATEGORY,
       }
       datePickerIsActive.value = true
     }
@@ -300,6 +374,7 @@ export default {
       dayMaxEvents: true,
       weekends: true,
       events: eventsRef,
+      firstDay: 1,
       select: handleDateSelectWrapper,
       eventClick: handleEventClick,
       eventsSet: handleEvents,
@@ -320,9 +395,12 @@ export default {
       handleWeekendsToggle,
       datePickerIsActive,
       datePickInfo,
+      categoryPickerIsActive,
       buildDialogDateString,
       saveEventWrapper,
       removeEvent,
+      getCategoryColor,
+      CATEGORY_TO_COLOR_MAPPING,
     }
   },
 }

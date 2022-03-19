@@ -7,6 +7,8 @@ import { InternalServerError } from '../errors/Utils'
 import { CalendarEvent, CalendarEventModel } from '../../model/CalendarEvent'
 import { isValidObjectId } from 'mongoose'
 
+const DEFAULT_EVENT_CATEGORY = 'General'
+
 interface CalendarEventApiObject extends CalendarEvent {
     id: string
 }
@@ -54,6 +56,10 @@ export function calendarEventHandler(app: Express, config: Config) {
                     const id = entry._id.toString()
                     delete entry._id
                     event = { ...entry, id }
+                    if (!event.category) {
+                        // TODO: This should be a migration
+                        event.category = DEFAULT_EVENT_CATEGORY
+                    }
 
                     returnValue.events.push(event)
                 }
@@ -77,7 +83,11 @@ export function calendarEventHandler(app: Express, config: Config) {
                 return
             }
 
+
             const event = new CalendarEventModel(req.body.event)
+            if (!event.category) {
+                event.category = DEFAULT_EVENT_CATEGORY
+            }
             await event.save()
 
             // Return the newly created ID to be set in the webapp
@@ -110,6 +120,7 @@ export function calendarEventHandler(app: Express, config: Config) {
             event.dateEnd = eventInput.dateEnd
             event.allDay = eventInput.allDay
             event.creator = eventInput.creator
+            event.category = eventInput.category || event.category
             await event.save()
 
 

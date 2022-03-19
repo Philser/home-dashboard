@@ -8,6 +8,7 @@ export interface CalendarEvent {
     allDay: boolean,
     creator: string,
     subject: string,
+    category: string
 }
 
 
@@ -36,6 +37,10 @@ const calendarEventSchema = new Schema<CalendarEvent>({
         type: String,
         required: true,
     },
+    category: {
+        type: String,
+        required: false,
+    }
 })
 
 
