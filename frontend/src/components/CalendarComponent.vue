@@ -152,7 +152,7 @@ interface DatePickInfo {
 
 const EVENT_CATEGORY_PROP_NAME = 'eventCategory'
 const DEFAULT_EVENT_CATEGORY = 'General'
-const CATEGORY_TO_COLOR_MAPPING = {
+const CATEGORY_TO_COLOR_MAPPING: { [key: string]: string } = {
   [DEFAULT_EVENT_CATEGORY]: '#4682B4',
   Phil: '#8A2BE2',
   Katya: '#FA8072',
@@ -223,7 +223,9 @@ async function saveEvent(datePickInfo: DatePickInfo) {
       backgroundColor: color,
       borderColor: color,
     })
-    newEvent.setExtendedProp(EVENT_CATEGORY_PROP_NAME, datePickInfo.category)
+    if (newEvent) {
+      newEvent.setExtendedProp(EVENT_CATEGORY_PROP_NAME, datePickInfo.category)
+    }
   } catch (e) {
     alert(`Saving event failed: ${e}`)
   }
