@@ -24,3 +24,11 @@ export async function getEvents(): Promise<CalendarEvent[]> {
 
     return response.data.events
 }
+
+export async function putEvent(event: CalendarEvent, eventId: string) {
+    await axios.put(`${getApiBaseUrl()}/calendarEvents/${eventId}`, { event }, { withCredentials: true })
+}
+
+export async function deleteEvent(eventId: string) {
+    await axios.delete(`${getApiBaseUrl()}/calendarEvents/${eventId}`, { withCredentials: true })
+}

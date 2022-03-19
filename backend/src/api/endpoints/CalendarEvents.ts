@@ -5,9 +5,10 @@ import { Config } from '../../config'
 import { getAuthMiddleware } from '../../middleware/Auth'
 import { InternalServerError } from '../errors/Utils'
 import { CalendarEvent, CalendarEventModel } from '../../model/CalendarEvent'
+import { isValidObjectId } from 'mongoose'
 
 interface CalendarEventApiObject extends CalendarEvent {
-    id?: string
+    id: string
 }
 interface CalendarEventsApiGet {
     events: CalendarEventApiObject[]
@@ -48,9 +49,11 @@ export function calendarEventHandler(app: Express, config: Config) {
 
             const entries = await CalendarEventModel.find({}).lean().exec()
             if (entries !== null) {
-                let event: CalendarEvent
+                let event: CalendarEventApiObject
                 for (const entry of entries) {
-                    event = entry
+                    const id = entry._id.toString()
+                    delete entry._id
+                    event = { ...entry, id }
 
                     returnValue.events.push(event)
                 }
@@ -86,17 +89,17 @@ export function calendarEventHandler(app: Express, config: Config) {
         }
     })
 
-    app.put('/api/calendarEvents', getAuthMiddleware(config.publicKeyPem), async (req, res) => {
+    // TODO: Middleware for object id validation
+    app.put('/api/calendarEvents/:eventId', getAuthMiddleware(config.publicKeyPem), async (req, res) => {
         try {
-            // TODO: Find a validation lib
-            if (!eventInputIsValid(req.body?.event) || !req.body?.event?.id) {
-                res.sendStatus(400)
+            const eventInput: CalendarEventApiObject = req.body.event
+            if (!isValidObjectId(req.params.eventId)) {
+                res.status(400).send(JSON.stringify({ error: 'Invalid event ID' }))
                 return
             }
-            const eventInput: CalendarEventApiObject = req.body.event
 
-            const event = await CalendarEventModel.findById(eventInput.id).exec()
-            if (!event) {
+            const event = await CalendarEventModel.findById(req.params.eventId).exec()
+            if (!event || event.errors) {
                 res.sendStatus(404)
                 return
             }
@@ -116,16 +119,14 @@ export function calendarEventHandler(app: Express, config: Config) {
         }
     })
 
-    app.delete('/api/calendarEvents', getAuthMiddleware(config.publicKeyPem), async (req, res) => {
+    app.delete('/api/calendarEvents/:eventId', getAuthMiddleware(config.publicKeyPem), async (req, res) => {
         try {
-            // TODO: Find a validation lib
-            if (!req.body?.event?.id) {
-                res.sendStatus(400)
+            if (!isValidObjectId(req.params.eventId)) {
+                res.status(400).send(JSON.stringify({ error: 'Invalid event ID' }))
                 return
             }
-
-            // TODO: Authorization?
-            const doc = await CalendarEventModel.findByIdAndRemove(req.body.event.id).exec()
+            // TODO: Allow for user-owned events only?
+            const doc = await CalendarEventModel.findByIdAndRemove(req.params.eventId).exec()
             if (!doc) {
                 res.sendStatus(404)
                 return

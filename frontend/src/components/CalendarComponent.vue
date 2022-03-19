@@ -10,6 +10,17 @@
         <v-card>
           <div style="display: flex; justify-content: flex-end">
             <v-btn
+              v-if="datePickInfo.eventId"
+              @click="
+                removeEvent(datePickInfo.eventId, datePickInfo.calendarApi),
+                  (datePickerIsActive = false)
+              "
+              variant="plain"
+              class="ma-2"
+              icon="mdi-delete"
+            >
+            </v-btn>
+            <v-btn
               @click="datePickerIsActive = false"
               variant="plain"
               class="ma-2"
@@ -23,15 +34,15 @@
             id="eventTitleInput"
             name="eventTitleInput"
             label="Title"
-            v-model="datePickerTitle"
+            v-model="datePickInfo.title"
           ></v-text-field>
           <v-list>
             <v-list-item>
               <v-col>
                 <v-list-item-title>{{
                   buildDialogDateString(
-                    new Date(dateSelectInfo.startStr),
-                    dateSelectInfo.allDay,
+                    new Date(datePickInfo.startStr),
+                    datePickInfo.allDay,
                     false,
                   )
                 }}</v-list-item-title>
@@ -40,8 +51,8 @@
               <v-col>
                 <v-list-item-title>{{
                   buildDialogDateString(
-                    new Date(dateSelectInfo.endStr),
-                    dateSelectInfo.allDay,
+                    new Date(datePickInfo.endStr),
+                    datePickInfo.allDay,
                     true,
                   )
                 }}</v-list-item-title>
@@ -51,7 +62,7 @@
           <v-card-actions>
             <v-col class="text-right">
               <v-btn @click="datePickerIsActive = false">Cancel</v-btn>
-              <v-btn @click="saveSelectedDateWrapper()">Save</v-btn>
+              <v-btn @click="saveEventWrapper()">Save</v-btn>
             </v-col>
           </v-card-actions>
         </v-card>
@@ -75,44 +86,103 @@ import FullCalendar, {
   DateSelectArg,
   EventClickArg,
   EventInput,
+  CalendarApi,
 } from '@fullcalendar/vue3'
 import dayGridPlugin from '@fullcalendar/daygrid'
 import timeGridPlugin from '@fullcalendar/timegrid'
 import interactionPlugin from '@fullcalendar/interaction'
 import { Ref, ref } from 'vue'
-import { getEvents, postEvent } from '../api/calendarEvents'
+import {
+  getEvents,
+  postEvent,
+  putEvent,
+  deleteEvent,
+} from '../api/calendarEvents'
 
-async function saveSelectedDate(selectInfo: DateSelectArg, title: string) {
+interface DatePickInfo {
+  startStr: string
+  endStr: string
+  allDay: boolean
+  calendarApi: CalendarApi
+  title?: string
+  eventId?: string
+}
+
+async function saveEvent(datePickInfo: DatePickInfo) {
   try {
-    const calendarApi = selectInfo.view.calendar
+    const { calendarApi } = datePickInfo
 
     calendarApi.unselect() // clear date selection
 
-    if (!title) {
+    if (!datePickInfo.title) {
+      // TODO Error message instead of close
       return
     }
 
-    const dateStart = new Date(selectInfo.startStr)
-    const dateEnd = new Date(selectInfo.endStr)
-    const { allDay } = selectInfo
-    const eventId = await postEvent({
-      title,
-      dateStart,
-      dateEnd,
-      allDay,
-      creator: '0',
-      subject: '0',
-    })
+    const dateStart = new Date(datePickInfo.startStr)
+    const dateEnd = new Date(datePickInfo.endStr)
+    const { allDay } = datePickInfo
+    let { eventId } = datePickInfo
+
+    if (datePickInfo.eventId) {
+      const calEvent = calendarApi.getEventById(datePickInfo.eventId)
+      if (!calEvent) {
+        // TODO Handle error? This shouldnt happen anyway, just to appease the linter
+        return
+      }
+
+      await putEvent(
+        {
+          title: datePickInfo.title,
+          dateStart,
+          dateEnd,
+          allDay,
+          creator: '0',
+          subject: '0',
+        },
+        datePickInfo.eventId,
+      )
+      calEvent.remove()
+    } else {
+      eventId = await postEvent({
+        title: datePickInfo.title,
+        dateStart,
+        dateEnd,
+        allDay,
+        creator: '0',
+        subject: '0',
+      })
+    }
 
     calendarApi.addEvent({
       id: eventId,
-      title,
-      start: selectInfo.startStr,
-      end: selectInfo.endStr,
-      allDay: selectInfo.allDay,
+      title: datePickInfo.title,
+      start: datePickInfo.startStr,
+      end: datePickInfo.endStr,
+      allDay: datePickInfo.allDay,
     })
   } catch (e) {
     alert(`Saving event failed: ${e}`)
+  }
+}
+
+async function removeEvent(eventId: string, calendarApi: CalendarApi) {
+  try {
+    if (!eventId) {
+      return
+    }
+
+    await deleteEvent(eventId)
+
+    const event = calendarApi.getEventById(eventId)
+    if (event) {
+      event.remove()
+    } else {
+      throw new Error(`$could not find calendar event ${eventId} for deletion`)
+    }
+  } catch (e) {
+    console.error(`Error deleting event: ${e}`)
+    alert(`Error deleting event`)
   }
 }
 
@@ -171,27 +241,36 @@ export default {
   setup() {
     const datePickerIsActive = ref(false)
 
-    const datePickerTitle = ref('')
-
     const currentEvents: Ref<EventApi[]> = ref([])
 
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    const dateSelectInfo: Ref<DateSelectArg> = ref({} as any)
+    const datePickInfo: Ref<DatePickInfo> = ref({} as any)
 
-    function saveSelectedDateWrapper() {
-      saveSelectedDate(dateSelectInfo.value, datePickerTitle.value)
-      datePickerTitle.value = ''
+    function saveEventWrapper() {
+      saveEvent(datePickInfo.value)
       datePickerIsActive.value = false
     }
 
     function handleDateSelectWrapper(selectInfo: DateSelectArg) {
-      dateSelectInfo.value = { ...selectInfo }
+      datePickInfo.value = {
+        startStr: selectInfo.startStr,
+        endStr: selectInfo.endStr,
+        allDay: selectInfo.allDay,
+        calendarApi: selectInfo.view.calendar,
+      }
       datePickerIsActive.value = true
     }
 
     function handleEventClick(clickInfo: EventClickArg) {
+      datePickInfo.value = {
+        startStr: clickInfo.event.startStr,
+        endStr: clickInfo.event.endStr,
+        allDay: clickInfo.event.allDay,
+        calendarApi: clickInfo.view.calendar,
+        title: clickInfo.event.title,
+        eventId: clickInfo.event.id,
+      }
       datePickerIsActive.value = true
-      clickInfo.event.remove()
     }
 
     function handleEvents(events: EventApi[]) {
@@ -240,10 +319,10 @@ export default {
       currentEvents,
       handleWeekendsToggle,
       datePickerIsActive,
-      datePickerTitle,
-      dateSelectInfo,
+      datePickInfo,
       buildDialogDateString,
-      saveSelectedDateWrapper,
+      saveEventWrapper,
+      removeEvent,
     }
   },
 }
