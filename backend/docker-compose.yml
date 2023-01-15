@@ -15,15 +15,6 @@ services:
       - DB_COLLECTION=${DB_COLLECTION:-dashboard}
     volumes:
       - ${DOCKERDIR?Missing DOCKERDIR}/dashboard/keys:${KEY_DIRECTORY:-/keys}
-    labels:
-      - "traefik.enable=true"
-      ## HTTP Routers
-      - "traefik.http.routers.api-rtr.entrypoints=https"
-      - "traefik.http.routers.api-rtr.rule=Host(`dashboard.$DOMAINNAME`)"
-      - "traefik.http.routers.api-rtr.tls=true"
-      ## HTTP Services
-      - "traefik.http.routers.api-rtr.service=api-svc"
-      - "traefik.http.services.api-svc.loadbalancer.server.port=${PORT:-8080}"
 
   db:
     image: mongo
