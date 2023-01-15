@@ -9,6 +9,7 @@ import { LoginHandler as loginHandler } from './api/endpoints/Login';
 import { Config, parseConfig } from './config';
 import { notebookHandler } from './api/endpoints/Notebook';
 import { calendarEventHandler } from './api/endpoints/CalendarEvents';
+import * as https from 'https';
 
 
 function initMiddlewares(config: Config, app: Application) {
@@ -48,12 +49,12 @@ async function run(): Promise<void> {
         calendarEventHandler(app, config);
 
 
-        // const server = https.createServer({
-        //     cert: config.cert,
-        //     key: config.certKey,
-        // }, app);
+        const server = https.createServer({
+            cert: config.cert,
+            key: config.certKey,
+        }, app);
 
-        app.listen(config.port, () => {
+        server.listen(config.port, () => {
             // tslint:disable-next-line:no-console
             console.log(`server started at ${config.domain}:${config.port}`);
         });
