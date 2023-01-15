@@ -7,8 +7,8 @@ export interface Config {
     domain: string;
     port: number;
 
-    cert: string;
-    certKey: string;
+    // cert: string;
+    // certKey: string;
 
     dbHost: string;
     dbUser: string;
@@ -29,15 +29,15 @@ function parseJWTKeys(): { publicKeyPem: string, privateKeyPem: string; } {
     };
 }
 
-function parseSSLCert(certPath: string, keyPath: string): { cert: string, certKey: string; } {
-    const cert = fs.readFileSync(certPath).toString();
-    const certKey = fs.readFileSync(keyPath).toString();
+// function parseSSLCert(certPath: string, keyPath: string): { cert: string, certKey: string; } {
+//     const cert = fs.readFileSync(certPath).toString();
+//     const certKey = fs.readFileSync(keyPath).toString();
 
-    return {
-        cert,
-        certKey
-    };
-}
+//     return {
+//         cert,
+//         certKey
+//     };
+// }
 
 export function parseConfig(): Config {
     try {
@@ -57,8 +57,6 @@ export function parseConfig(): Config {
         }
 
         const { publicKeyPem, privateKeyPem } = parseJWTKeys();
-
-        // const { cert, certKey } = parseSSLCert(`${process.env.KEY_DIRECTORY}/cert.pem`, `${process.env.KEY_DIRECTORY}/cert_key.pem`);
 
         const dbHost = process.env.DB_HOST;
         if (!domain) {
@@ -86,8 +84,6 @@ export function parseConfig(): Config {
             publicKeyPem,
             privateKeyPem,
             domain,
-            cert,
-            certKey,
             dbHost,
             dbUser,
             dbPassword,
