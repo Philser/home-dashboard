@@ -58,7 +58,7 @@ export function parseConfig(): Config {
 
         const { publicKeyPem, privateKeyPem } = parseJWTKeys();
 
-        const { cert, certKey } = parseSSLCert(`${process.env.KEY_DIRECTORY}/cert.pem`, `${process.env.KEY_DIRECTORY}/cert_key.pem`);
+        // const { cert, certKey } = parseSSLCert(`${process.env.KEY_DIRECTORY}/cert.pem`, `${process.env.KEY_DIRECTORY}/cert_key.pem`);
 
         const dbHost = process.env.DB_HOST;
         if (!domain) {
