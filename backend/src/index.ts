@@ -33,7 +33,7 @@ function initMiddlewares(config: Config, app: Application) {
     app.use(cookieParser());
 }
 
-async function server(): Promise<void> {
+async function run(): Promise<void> {
     try {
         const config = parseConfig();
 
@@ -49,12 +49,12 @@ async function server(): Promise<void> {
         calendarEventHandler(app, config);
 
 
-        const server = https.createServer({
-            cert: config.cert,
-            key: config.certKey,
-        }, app);
+        // const server = https.createServer({
+        //     cert: config.cert,
+        //     key: config.certKey,
+        // }, app);
 
-        server.listen(config.port, () => {
+        app.listen(config.port, () => {
             // tslint:disable-next-line:no-console
             console.log(`server started at ${config.domain}:${config.port}`);
         });
@@ -64,6 +64,6 @@ async function server(): Promise<void> {
 
 }
 
-server().catch(console.dir)
+run().catch(console.dir)
 
 
