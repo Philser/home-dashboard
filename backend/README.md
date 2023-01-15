@@ -27,3 +27,27 @@ Path to the base of two external volumes that are being included into the contai
     - Used to store the RSA keypair for creating JWTs
         - `${DOCKERDIR}/dashboard/keys/private.pem`
         - `${DOCKERDIR}/dashboard/keys/public.pem`
+
+
+
+# MongoDB Setup
+Example setup.js:
+```Javascript
+db.createUser(
+{
+    user: "user",
+    pwd: "password",
+    roles: [{ role: 'readWrite', db: 'dashboard' }]
+})
+
+db = new Mongo().getDB("dashboard");
+
+db.createCollection("user")
+
+db.user.insert([
+        {
+                "username": "user",
+                "passwordHash": "bcryptedPassword"
+        }
+])
+```
