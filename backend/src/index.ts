@@ -1,60 +1,65 @@
 // tslint:disable:no-console
-import cookieParser = require('cookie-parser')
-import express from 'express'
-import cors from 'cors'
-import { initDb } from './db/Mongo'
-import { wachlistApi } from './api/endpoints/Watchlist'
-import { ShoppingListHandler as shoppingListApi } from './api/endpoints/ShoppingList'
-import { LoginHandler as loginHandler } from './api/endpoints/Login'
-import { Config, parseConfig } from './config'
-import { notebookHandler } from './api/endpoints/Notebook'
-import { calendarEventHandler } from './api/endpoints/CalendarEvents'
+import cookieParser = require('cookie-parser');
+import express, { Application } from 'express';
+import cors from 'cors';
+import { initDb } from './db/Mongo';
+import { wachlistApi } from './api/endpoints/Watchlist';
+import { ShoppingListHandler as shoppingListApi } from './api/endpoints/ShoppingList';
+import { LoginHandler as loginHandler } from './api/endpoints/Login';
+import { Config, parseConfig } from './config';
+import { notebookHandler } from './api/endpoints/Notebook';
+import { calendarEventHandler } from './api/endpoints/CalendarEvents';
+import * as https from 'https';
 
-const app = express()
 
-function initMiddlewares(config: Config) {
+function initMiddlewares(config: Config, app: Application) {
     app.use(cors({
         origin(origin, callback) {
-            const re = new RegExp(`${config.domain}(\:\d{2,5})?`)
+            const re = new RegExp(`${config.domain}(\:\d{2,5})?`);
 
             if (re.exec(origin) === null) {
-                return callback(null, false)
+                return callback(null, false);
             }
 
-            return callback(null, true)
+            return callback(null, true);
         },
         credentials: true,
-    }))
+    }));
 
-    app.use(express.json())
+    app.use(express.json());
     app.use(express.urlencoded({
         extended: true
-    }))
-    app.use(cookieParser())
+    }));
+    app.use(cookieParser());
 }
 
 async function server(): Promise<void> {
     try {
-        const config = parseConfig()
+        const config = parseConfig();
 
-        await initDb(config)
+        await initDb(config);
 
-        initMiddlewares(config)
+        const app = express();
+        initMiddlewares(config, app);
 
-        wachlistApi(app, config)
-        shoppingListApi(app, config)
-        loginHandler(app, config)
-        notebookHandler(app, config)
-        calendarEventHandler(app, config)
+        wachlistApi(app, config);
+        shoppingListApi(app, config);
+        loginHandler(app, config);
+        notebookHandler(app, config);
+        calendarEventHandler(app, config);
 
 
-        // start the Express server
-        app.listen(config.port, () => {
+        const server = https.createServer({
+            cert: config.cert,
+            key: config.certKey,
+        }, app);
+
+        server.listen(config.port, () => {
             // tslint:disable-next-line:no-console
-            console.log(`server started at ${config.domain}:${config.port}`)
-        })
+            console.log(`server started at ${config.domain}:${config.port}`);
+        });
     } catch (e) {
-        console.error(`Fatal: ${e}`)
+        console.error(`Fatal: ${e}`);
     }
 
 }

@@ -1,70 +1,83 @@
-import * as fs from 'fs'
-import * as dotenv from 'dotenv'
+import * as fs from 'fs';
+import * as dotenv from 'dotenv';
 
 export interface Config {
-    publicKeyPem: string
-    privateKeyPem: string
-    domain: string
-    port: number
+    publicKeyPem: string;
+    privateKeyPem: string;
+    domain: string;
+    port: number;
 
-    dbHost: string
-    dbUser: string
-    dbPassword: string
-    dbCollection: string
+    cert: string;
+    certKey: string;
+
+    dbHost: string;
+    dbUser: string;
+    dbPassword: string;
+    dbCollection: string;
 }
 
-const DEFAULT_PORT = 8081 // default port to listen
+const DEFAULT_PORT = 8081; // default port to listen
 
-function parsePublicPrivateKeys(): { publicKeyPem: string, privateKeyPem: string } {
+function parseJWTKeys(): { publicKeyPem: string, privateKeyPem: string; } {
     // TODO: Have a configurable absolute path for keys
-    const publicKeyPem = fs.readFileSync(`${process.env.KEY_DIRECTORY}/public.pem`).toString()
-    const privateKeyPem = fs.readFileSync(`${process.env.KEY_DIRECTORY}/private.pem`).toString()
+    const publicKeyPem = fs.readFileSync(`${process.env.KEY_DIRECTORY}/public.pem`).toString();
+    const privateKeyPem = fs.readFileSync(`${process.env.KEY_DIRECTORY}/private.pem`).toString();
 
     return {
         publicKeyPem,
         privateKeyPem
-    }
+    };
+}
+
+function parseSSLCert(certPath: string, keyPath: string): { cert: string, certKey: string; } {
+    const cert = fs.readFileSync(certPath).toString();
+    const certKey = fs.readFileSync(keyPath).toString();
+
+    return {
+        cert,
+        certKey
+    };
 }
 
 export function parseConfig(): Config {
     try {
-        dotenv.config()
-        let port = DEFAULT_PORT
+        dotenv.config();
+        let port = DEFAULT_PORT;
         if (process.env.PORT) {
-            port = parseInt(process.env.PORT, 10)
+            port = parseInt(process.env.PORT, 10);
 
             if (Number.isNaN(port)) {
-                throw new Error(`Invalid PORT value: ${process.env.PORT}. Expected number`)
+                throw new Error(`Invalid PORT value: ${process.env.PORT}. Expected number`);
             }
         }
 
-        const domain = process.env.DOMAIN
+        const domain = process.env.DOMAIN;
         if (!domain) {
-            throw new Error(`Missing DOMAIN`)
+            throw new Error(`Missing DOMAIN`);
         }
 
-        const keys = parsePublicPrivateKeys()
-        const publicKeyPem = keys.publicKeyPem
-        const privateKeyPem = keys.privateKeyPem
+        const { publicKeyPem, privateKeyPem } = parseJWTKeys();
 
-        const dbHost = process.env.DB_HOST
+        const { cert, certKey } = parseSSLCert(`${process.env.KEY_DIRECTORY}/cert.pem`, `${process.env.KEY_DIRECTORY}/cert_key.pem`);
+
+        const dbHost = process.env.DB_HOST;
         if (!domain) {
-            throw new Error('Missing DB_HOST')
+            throw new Error('Missing DB_HOST');
         }
 
-        const dbUser = process.env.DB_USER
+        const dbUser = process.env.DB_USER;
         if (!domain) {
-            throw new Error('Missing DB_USER')
+            throw new Error('Missing DB_USER');
         }
 
-        const dbPassword = process.env.DB_PASSWORD
+        const dbPassword = process.env.DB_PASSWORD;
         if (!dbPassword) {
-            throw new Error('Missing DB_PASSWORD')
+            throw new Error('Missing DB_PASSWORD');
         }
 
-        const dbCollection = process.env.DB_COLLECTION
+        const dbCollection = process.env.DB_COLLECTION;
         if (!dbCollection) {
-            throw new Error('Missing DB_COLLECTION')
+            throw new Error('Missing DB_COLLECTION');
         }
 
 
@@ -73,13 +86,15 @@ export function parseConfig(): Config {
             publicKeyPem,
             privateKeyPem,
             domain,
+            cert,
+            certKey,
             dbHost,
             dbUser,
             dbPassword,
             dbCollection
-        }
+        };
     } catch (e) {
-        throw new Error(`Error parsing config: ${e}`)
+        throw new Error(`Error parsing config: ${e}`);
     }
 }
 

@@ -11,7 +11,7 @@ services:
       - KEY_DIRECTORY=${KEY_DIRECTORY:-/keys}
       - DB_HOST=${DB_HOST:-db}
       - DB_USER=${DB_USER?Missing DB_USER}
-      - DB_PASSWORD=${DB_USER?Missing DB_PASSWORD}
+      - DB_PASSWORD=${DB_PASSWORD?Missing DB_PASSWORD}
       - DB_COLLECTION=${DB_COLLECTION:-dashboard}
     volumes:
       - ${DOCKERDIR?Missing DOCKERDIR}/dashboard/keys:${KEY_DIRECTORY:-/keys}
