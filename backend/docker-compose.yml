@@ -27,8 +27,6 @@ services:
       ## HTTP Services
       - "traefik.http.routers.api-rtr.service=api-svc"
       - "traefik.http.services.api-svc.loadbalancer.server.port=${PORT:-8080}"
-    networks:
-      - t2_proxy
 
   db:
     image: mongo
