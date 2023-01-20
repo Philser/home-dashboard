@@ -7,7 +7,6 @@ export interface Credentials {
     password: string;
 }
 
-
 function notifyOfLoginError(e: AxiosError) {
     if (e.response) {
         if (e.response.status === 401) {
@@ -21,7 +20,6 @@ function notifyOfLoginError(e: AxiosError) {
         alert("Nobody's answering on the other side...Is the server up?");
     }
 }
-
 
 export async function postLogin(credentials: Credentials) {
     await axios.post(`${getApiBaseUrl()}/login`, {

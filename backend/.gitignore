@@ -2,3 +2,4 @@ conf/config.yml
 keys/*
 dashboard/mongo
 script.js
+local/dockerdir/dashboard/mongo

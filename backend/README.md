@@ -23,12 +23,35 @@ Path to the base of two external volumes that are being included into the contai
 - `${DOCKERDIR}/dashboard/keys`
     - Used to store the SSL certificate for HTTPS support and the private key
         - `${DOCKERDIR}/dashboard/keys/cert.pem`
-        - `${DOCKERDIR}/dashboard/keys/certKey.pem`
+        - `${DOCKERDIR}/dashboard/keys/cert_key.pem`
     - Used to store the RSA keypair for creating JWTs
         - `${DOCKERDIR}/dashboard/keys/private.pem`
         - `${DOCKERDIR}/dashboard/keys/public.pem`
 
+# Local Development
+### Keys & Certificate
+To quickly generate RSA keys for local development, run:
+```
+openssl genrsa -out private.pem 2048
+openssl rsa -in private.pem -outform PEM -pubout -out public.pem
+```
 
+To generate a certificate and the respective key, run: 
+```
+openssl req -x509 \
+            -sha256 -days 356 \
+            -nodes \
+            -newkey rsa:2048 \
+            -keyout rootCA.key -out rootCA.crt
+```
+
+### Running locally
+To run the setup locally, run:
+```
+DOCKERDIR=./dockerdir DB_USER=user DB_PASSWORD=password PORT=4848 docker compose -f docker-compose.local.yml up
+```
+
+Standard login credentials are `user:password`.
 
 # MongoDB Setup
 Example setup.js:
