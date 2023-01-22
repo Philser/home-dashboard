@@ -8,6 +8,7 @@
         persistent
       >
         <v-card>
+          <!-- Icons top right of dialog -->
           <div style="display: flex; justify-content: flex-end">
             <v-btn
               v-if="datePickInfo.eventId"
@@ -29,6 +30,7 @@
             </v-btn>
           </div>
 
+          <!-- Title Field -->
           <v-text-field
             type="text"
             id="eventTitleInput"
@@ -37,11 +39,12 @@
             v-model="datePickInfo.title"
           ></v-text-field>
           <v-list>
+            <!-- Date picker -->
             <v-list-item>
               <v-col>
                 <v-list-item-title>{{
                   buildDialogDateString(
-                    new Date(datePickInfo.startStr),
+                    datePickInfo.start,
                     datePickInfo.allDay,
                     false,
                   )
@@ -51,13 +54,14 @@
               <v-col>
                 <v-list-item-title>{{
                   buildDialogDateString(
-                    new Date(datePickInfo.endStr),
+                    datePickInfo.end,
                     datePickInfo.allDay,
                     true,
                   )
                 }}</v-list-item-title>
               </v-col>
             </v-list-item>
+            <!-- Category ("Owner") picker -->
             <v-list-item>
               <v-menu top v-model="categoryPickerIsActive">
                 <template v-slot:activator="{ props }">
@@ -99,6 +103,7 @@
               </v-menu>
             </v-list-item>
           </v-list>
+          <!-- buttons on the bottom -->
           <v-card-actions>
             <v-col class="text-right">
               <v-btn @click="datePickerIsActive = false">Cancel</v-btn>
@@ -121,14 +126,15 @@
 /* eslint-disable no-restricted-syntax */
 /* eslint-disable operator-linebreak */
 // TODO: how to disable globally?
-import '@fullcalendar/core/vdom' // solve problem with Vite
-import FullCalendar, {
+// import '@fullcalendar/core/vdom' // solve problem with Vite
+import FullCalendar from '@fullcalendar/vue3'
+import {
   EventApi,
   DateSelectArg,
   EventClickArg,
   EventInput,
   CalendarApi,
-} from '@fullcalendar/vue3'
+} from '@fullcalendar/core'
 import dayGridPlugin from '@fullcalendar/daygrid'
 import timeGridPlugin from '@fullcalendar/timegrid'
 import interactionPlugin from '@fullcalendar/interaction'
@@ -141,8 +147,8 @@ import {
 } from '../api/calendarEvents'
 
 interface DatePickInfo {
-  startStr: string
-  endStr: string
+  start: Date
+  end: Date
   allDay: boolean
   calendarApi: CalendarApi
   title?: string
@@ -176,10 +182,18 @@ async function saveEvent(datePickInfo: DatePickInfo) {
       return
     }
 
-    const dateStart = new Date(datePickInfo.startStr)
-    const dateEnd = new Date(datePickInfo.endStr)
     const { allDay } = datePickInfo
     let { eventId } = datePickInfo
+
+    const event = {
+      title: datePickInfo.title,
+      dateStart: datePickInfo.start,
+      dateEnd: datePickInfo.end,
+      allDay,
+      category: datePickInfo.category,
+      creator: '0',
+      subject: '0',
+    }
 
     if (datePickInfo.eventId) {
       const calEvent = calendarApi.getEventById(datePickInfo.eventId)
@@ -189,36 +203,20 @@ async function saveEvent(datePickInfo: DatePickInfo) {
       }
 
       await putEvent(
-        {
-          title: datePickInfo.title,
-          dateStart,
-          dateEnd,
-          allDay,
-          category: datePickInfo.category,
-          creator: '0',
-          subject: '0',
-        },
+        event,
         datePickInfo.eventId,
       )
       calEvent.remove() // there's no updating a calendar event, so we remove and re-add it
     } else {
-      eventId = await postEvent({
-        title: datePickInfo.title,
-        dateStart,
-        dateEnd,
-        allDay,
-        category: datePickInfo.category,
-        creator: '0',
-        subject: '0',
-      })
+      eventId = await postEvent(event)
     }
 
     const color = getCategoryColor(datePickInfo.category)
     const newEvent = calendarApi.addEvent({
       id: eventId,
       title: datePickInfo.title,
-      start: datePickInfo.startStr,
-      end: datePickInfo.endStr,
+      start: datePickInfo.start,
+      end: datePickInfo.end,
       allDay: datePickInfo.allDay,
       backgroundColor: color,
       borderColor: color,
@@ -231,7 +229,7 @@ async function saveEvent(datePickInfo: DatePickInfo) {
   }
 }
 
-async function removeEvent(eventId: string, calendarApi: CalendarApi) {
+async function removeEvent(eventId: string | undefined, calendarApi: CalendarApi) {
   try {
     if (!eventId) {
       return
@@ -282,21 +280,22 @@ function buildDialogDateString(
   allDay: boolean,
   isEndDate: boolean,
 ): string {
+  const dateToDisplay = new Date(date);
   if (isEndDate && allDay) {
     // endStr is exclusive for the fullCalendar component, which means it stores
     // the next day if it is an all-day event.
     // For our dialog, however, we want to display the last day that
     // is still affected by the event
-    date.setDate(date.getDate() - 1)
+    dateToDisplay.setDate(date.getDate() - 1)
   }
 
-  let dialogDateString = `${date.getDate()}.${
-    date.getMonth() + 1
-  }.${date.getFullYear()}`
+  let dialogDateString = `${dateToDisplay.getDate()}.${
+    dateToDisplay.getMonth() + 1
+  }.${dateToDisplay.getFullYear()}`
 
   if (!allDay) {
-    const minutes = date.getMinutes() === 0 ? '00' : `${date.getMinutes()}`
-    dialogDateString = `${dialogDateString} ${date.getHours()}:${minutes}`
+    const minutes = dateToDisplay.getMinutes() === 0 ? '00' : `${dateToDisplay.getMinutes()}`
+    dialogDateString = `${dialogDateString} ${dateToDisplay.getHours()}:${minutes}`
   }
 
   return dialogDateString
@@ -322,8 +321,8 @@ export default {
 
     function handleDateSelectWrapper(selectInfo: DateSelectArg) {
       datePickInfo.value = {
-        startStr: selectInfo.startStr,
-        endStr: selectInfo.endStr,
+        start: selectInfo.start,
+        end: selectInfo.end,
         allDay: selectInfo.allDay,
         calendarApi: selectInfo.view.calendar,
         category: DEFAULT_EVENT_CATEGORY,
@@ -333,8 +332,8 @@ export default {
 
     function handleEventClick(clickInfo: EventClickArg) {
       datePickInfo.value = {
-        startStr: clickInfo.event.startStr,
-        endStr: clickInfo.event.endStr,
+        start: clickInfo.event.start || new Date(), // TODO: This hack sucks
+        end: clickInfo.event.end || new Date(),
         allDay: clickInfo.event.allDay,
         calendarApi: clickInfo.view.calendar,
         title: clickInfo.event.title,
