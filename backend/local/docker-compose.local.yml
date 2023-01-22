@@ -18,6 +18,9 @@ services:
 
   db:
     image: mongo
+    # Uncomment for enabling outside access to container
+    # ports:
+      # - "27017:27017"
     restart: unless-stopped
     environment:
       - MONGO_INITDB_ROOT_USERNAME=phil
