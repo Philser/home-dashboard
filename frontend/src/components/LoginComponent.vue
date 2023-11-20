@@ -49,7 +49,8 @@ export default {
 };
 (() => {
   // Create a queue, but don't obliterate an existing one!
-  const innkeepr = (window as any).Innkeepr || []
+  const innkeepr = (window as any).Innkeepr || [];
+  (window as any).Innkeepr = innkeepr
 
   innkeepr.methods = ['identify', 'track', 'getCookie']
   // Define a factory to create stubs. These are placeholders
