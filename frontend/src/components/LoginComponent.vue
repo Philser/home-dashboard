@@ -90,7 +90,7 @@ export default {
 
   // Load Innkeepr.js with your key, which will automatically
   // load the tools you've enabled!
-  innkeepr.load('49b72d4d-4314-2116-ea34-19eddbbbc3dc', 'http://localhost:8080')
+  innkeepr.load('49b72d4d-4314-2116-ea34-19eddbbbc3dc', 'https://api.innkeepr.ai')
 })()
 </script>
 
