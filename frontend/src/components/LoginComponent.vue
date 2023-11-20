@@ -1,3 +1,4 @@
+<!-- eslint-disable -->
 <template>
   <v-container>
     <v-row>
@@ -12,11 +13,11 @@
   </v-container>
 </template>
 
-<script lang="ts">
-import { ref } from 'vue'
-import { useRouter } from 'vue-router'
-import { postLogin } from '../api/login'
-import { loggedInState } from '../auth'
+<script lang="ts" type="application/javascript">
+import { ref } from 'vue';
+import { useRouter } from 'vue-router';
+import { postLogin } from '../api/login';
+import { loggedInState } from '../auth';
 
 export default {
   setup() {
@@ -45,46 +46,43 @@ export default {
       password,
     }
   },
-}
-</script>
-
-<script>
-;(function () {
+};
+(() => {
   // Create a queue, but don't obliterate an existing one!
-  var innkeepr = (window.Innkeepr = window.Innkeepr || [])
+  const innkeepr = (window as any).Innkeepr || []
 
   innkeepr.methods = ['identify', 'track', 'getCookie']
   // Define a factory to create stubs. These are placeholders
   // for methods in Innkeepr.js so that you never have to wait
   // for it to load to actually record data. The `method` is
   // stored as the first argument, so we can replay the data.
-  innkeepr.factory = function (method) {
+  innkeepr.factory = function (method: string) {
     return function () {
-      var args = Array.prototype.slice.call(arguments)
+      const args = Array.prototype.slice.call(arguments)
       args.unshift(method)
       innkeepr.push(args)
       return innkeepr
     }
   }
   // For each of our methods, generate a queueing stub.
-  for (var i = 0; i < innkeepr.methods.length; i++) {
-    var key = innkeepr.methods[i]
+  for (let i = 0; i < innkeepr.methods.length; i += 1) {
+    const key = innkeepr.methods[i]
     innkeepr[key] = innkeepr.factory(key)
   }
 
   // Define a method to load Innkeepr.js.
-  innkeepr.load = function (apiKey, apiUrl) {
+  innkeepr.load = function (apiKey: string, apiUrl:string) {
     // Create an async script element based on your key.
     innkeepr.apiKey = apiKey
     innkeepr.apiUrl = apiUrl
-    var script = document.createElement('script')
+    const script = document.createElement('script')
     script.type = 'application/javascript'
-    script.async = 'false'
+    script.async = false
     script.src = 'https://d3qwomaseq0uwx.cloudfront.net/innkeepr.js' // Proxy URL
 
     // Insert our script next to the first script element.
-    var first = document.getElementsByTagName('script')[0]
-    first.parentNode.insertBefore(script, first)
+    const first = document.getElementsByTagName('script')[0];
+    (first.parentNode as any).insertBefore(script, first)
   }
 
   // Add a version to keep track of what's in the wild.
