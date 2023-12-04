@@ -79,7 +79,7 @@ export default {
     const script = document.createElement('script')
     script.type = 'application/javascript'
     script.async = false
-    script.src = 'https://d3qwomaseq0uwx.cloudfront.net/innkeepr.js' // Proxy URL
+    script.src = 'https://test.philser.net/innkeepr.js' // Proxy URL
 
     // Insert our script next to the first script element.
     const first = document.getElementsByTagName('script')[0];
